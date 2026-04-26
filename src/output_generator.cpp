@@ -1,0 +1,1 @@
+#include "../include/output_generator.h"

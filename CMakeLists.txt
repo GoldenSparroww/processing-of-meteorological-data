@@ -9,12 +9,9 @@ project(
 
 set(CMAKE_CXX_STANDARD 20)
 
-FILE(GLOB_RECURSE serial_src serial/main.cpp serial/src/*.cpp serial/include/*.h)
-FILE(GLOB_RECURSE parallel_src parallel/main.cpp parallel/src/*.cpp parallel/include/*.h)
+FILE(GLOB_RECURSE srcs main.cpp src/*.cpp include/*.h)
 
-add_executable(serial.exe ${serial_src})
-add_executable(parallel.exe ${parallel_src})
+add_executable(upp_sp1.exe ${srcs})
 
-target_compile_options(serial.exe PRIVATE -Wall -Wextra)
-target_compile_options(parallel.exe PRIVATE -Wall -Wextra)
+target_compile_options(upp_sp1.exe PRIVATE -Wall -Wextra)
 
