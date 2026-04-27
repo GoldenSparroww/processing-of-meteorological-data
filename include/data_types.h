@@ -30,6 +30,7 @@ enum ErrorCode {
     EXIT_OK = EXIT_SUCCESS,
     EXIT_INVALID_ARGS_ERR = 1,
     EXIT_INPUT_FILE_ERR = 2,
+    EXIT_GENERAL_ERR = 100,
 };
 
 #endif

@@ -7,6 +7,7 @@
 // Remove stations which does not fulfil the needs
 void filterStations(std::unordered_map<int, Station>& stations);
 
+// Get anomalies from stations
 std::vector<Anomaly> detectAnomalies(const std::unordered_map<int, Station>& stations);
 
 #endif
