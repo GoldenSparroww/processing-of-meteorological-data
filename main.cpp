@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+
+#include "data_processor.h"
 #include "include/data_loader.h"
 
 int main(const int argc, const char* argv[]) {
@@ -27,8 +29,10 @@ int main(const int argc, const char* argv[]) {
 
     // Execute logic
     try {
-        const auto stations = loadStations(file1);
+        auto stations = loadStations(file1);
         std::cout << "Loaded stations: " << stations.size() << std::endl;
+
+        filterStations(stations);
 
         if (useParallel) {
             std::cout << "Executing parallel version..." << std::endl;

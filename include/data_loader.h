@@ -1,14 +1,14 @@
-#ifndef PROCESSING_OF_METEOROLOGICAL_DATA_DATALOADER_H
-#define PROCESSING_OF_METEOROLOGICAL_DATA_DATALOADER_H
+#ifndef PROCESSING_OF_METEOROLOGICAL_DATA_DATA_LOADER_H
+#define PROCESSING_OF_METEOROLOGICAL_DATA_DATA_LOADER_H
 
 #include <string>
 #include <unordered_map>
 #include "data_types.h"
 
-// Nacte stanice ze souboru a vrati je v mape (klic je id stanice)
+// Loads stations data from a given filepath and returns them in hashmap (key is station ID)
 std::unordered_map<int, Station> loadStations(const std::string& filePath);
 
-// Nacte mereni ze souboru a priradi je k jiz nactenym stanicim
+// Loads measurements data from a given filepath and assigns them to leaded stations
 void loadMeasurements(const std::string& filePath, std::unordered_map<int, Station>& stations);
 
 #endif
