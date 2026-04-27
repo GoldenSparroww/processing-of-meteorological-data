@@ -30,14 +30,14 @@ int main(const int argc, const char* argv[]) {
     // Execute logic
     try {
         auto stations = loadStations(file1);
-        std::cout << "Loaded stations: " << stations.size() << std::endl;
-
-        filterStations(stations);
+        loadMeasurements(file2, stations);
 
         if (useParallel) {
             std::cout << "Executing parallel version..." << std::endl;
         } else {
             std::cout << "Executing serial version..." << std::endl;
+            filterStations(stations);
+            auto anomalies = detectAnomalies(stations);
         }
     } catch (const std::exception& e) {
         std::cerr << "An error occurred. " << e.what() << std::endl;
