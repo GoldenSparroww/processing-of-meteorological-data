@@ -43,8 +43,8 @@ int main(const int argc, const char* argv[]) {
             std::cout << "Starting serial version...\n";
             filterStations(stations);
             auto anomalies = detectAnomalies(stations);
-            exportAnomalies(anomalies, "anomalies.csv");
-            std::cout << "Anomalies found: " << anomalies.size() << '\n';
+            exportAnomalies(anomalies, "vykyvy.csv");
+            generateMaps(stations, "/mnt/c/Users/Rayaxir/Desktop/czmap.svg");
         }
 
         // Stop stopwatch and calculate duration
