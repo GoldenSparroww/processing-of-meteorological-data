@@ -6,11 +6,11 @@
 
 void precalculate_stations(Station& station) {
     for (const auto& m : station.measurements) {
-        // agreagate month -> year
+        // Aggregate month -> year
         station.monthly_yearly_stats[m.month][m.year].sum += m.value;
         station.monthly_yearly_stats[m.month][m.year].count++;
 
-        // Agregate month
+        // Aggregate month
         station.monthly_stats[m.month].sum += m.value;
         station.monthly_stats[m.month].count++;
     }
@@ -59,7 +59,7 @@ void filter_stations(std::unordered_map<int, Station>& stations) {
             continue;
         }
 
-        // Check if station had at least an average of 100 mesurements per year (>= 100)
+        // Check if station had at least an average of 100 measurements per year (>= 100)
         // Continuation epoch (last year - fist year + 1)
         int min_year = *unique_years.begin();
         int max_year = *unique_years.rbegin();
@@ -85,7 +85,7 @@ std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& st
     for (const auto& pair : stations) {
         const Station& station = pair.second;
 
-        // Systematicly find anomalies
+        // Systematically find anomalies
         for (int month = 1; month <= 12; ++month) {
             auto month_it = station.monthly_yearly_stats.find(month);
             if (month_it == station.monthly_yearly_stats.end()) continue;

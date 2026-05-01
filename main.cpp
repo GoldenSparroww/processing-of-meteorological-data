@@ -33,14 +33,14 @@ int main(const int argc, const char* argv[]) {
 
     const std::string fileStations = argv[1];
     const std::string fileMeasurements = argv[2];
-    bool useParallel = false;
+    bool is_parallel = false;
 
     // Check mode flag
     const std::string flag = argv[3];
     if (flag == "-s" || flag == "--serial") {
-        useParallel = false;
+        is_parallel = false;
     } else if (flag == "-p" || flag == "--parallel") {
-        useParallel = true;
+        is_parallel = true;
     } else {
         std::cerr << "Error: Invalid flag '" << flag << "'. Expected --serial or --parallel.\n";
         return EXIT_INVALID_ARGS_ERR;
@@ -54,22 +54,23 @@ int main(const int argc, const char* argv[]) {
         auto stations = load_stations(fileStations);
         load_measurements(fileMeasurements, stations);
 
-        if (useParallel) {
+        if (is_parallel) {
             std::cout << "Starting parallel version...\n";
         } else {
             std::cout << "Starting serial version...\n";
-            filter_stations(stations);
-            std::cout << stations.size() << "\n";
-            auto anomalies = detect_anomalies(stations);
-            deterministic_sort(anomalies);
-            export_anomalies(anomalies, "vykyvy.csv");
-            generate_maps(stations);
         }
+
+        // Process data
+        filter_stations(stations, is_parallel);
+        std::cout << stations.size() << "\n";
+        auto anomalies = detect_anomalies(stations, is_parallel);
+        deterministic_sort(anomalies);
+        export_anomalies(anomalies, "vykyvy.csv");
+        generate_maps(stations, is_parallel);
 
         // Stop stopwatch and calculate duration
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
-
         std::cout << "Processing completed. Total time: " << elapsed.count() << " ms\n";
 
     } catch (const std::exception& e) {

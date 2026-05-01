@@ -5,9 +5,9 @@
 #include "data_types.h"
 
 // Remove stations which does not fulfil the needs
-void filter_stations(std::unordered_map<int, Station>& stations);
+void filter_stations(std::unordered_map<int, Station>& stations, bool is_parallel);
 
 // Get anomalies from stations
-std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& stations);
+std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& stations, bool is_parallel);
 
 #endif
