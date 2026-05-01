@@ -16,9 +16,9 @@ set(SOURCES
         src/output_generator.cpp
 )
 
-add_executable(upp_sp1.exe ${SOURCES})
+add_executable(upp_sp1 ${SOURCES})
 
-target_include_directories(upp_sp1.exe PRIVATE include)
+target_include_directories(upp_sp1 PRIVATE include)
 
-target_compile_options(upp_sp1.exe PRIVATE -Wall -Wextra)
+target_compile_options(upp_sp1 PRIVATE -Wall -Wextra)
 

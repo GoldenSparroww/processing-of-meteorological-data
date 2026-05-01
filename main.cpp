@@ -8,7 +8,7 @@
 
 /**
  * Test method
- * Only for debugging purpose (checking files somehow manually)
+ * Currently only for debugging purpose (checking files somehow manually)
  * @param anomalies
  */
 void deterministic_sort(std::vector<Anomaly>& anomalies) {
@@ -61,9 +61,9 @@ int main(const int argc, const char* argv[]) {
             filterStations(stations);
             std::cout << stations.size() << "\n";
             auto anomalies = detectAnomalies(stations);
-            //deterministic_sort(anomalies);
+            deterministic_sort(anomalies);
             exportAnomalies(anomalies, "vykyvy.csv");
-            generateMaps(stations, "/mnt/c/Users/Rayaxir/Desktop/czmap.svg");
+            generateMaps(stations);
         }
 
         // Stop stopwatch and calculate duration

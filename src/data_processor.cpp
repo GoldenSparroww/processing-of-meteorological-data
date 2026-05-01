@@ -4,9 +4,21 @@
 #include <limits>
 #include "../include/data_processor.h"
 
+void precalculate_stations(Station& station) {
+    for (const auto& m : station.measurements) {
+        // agreagate month -> year
+        station.monthly_yearly_stats[m.month][m.year].sum += m.value;
+        station.monthly_yearly_stats[m.month][m.year].count++;
+
+        // Agregate month
+        station.monthly_stats[m.month].sum += m.value;
+        station.monthly_stats[m.month].count++;
+    }
+}
+
 void filterStations(std::unordered_map<int, Station>& stations) {
     for (auto it = stations.begin(); it != stations.end(); ) {
-        const Station& station = it->second;
+        Station& station = it->second;
 
         // Set guarantees, that years are going to be sorted (ascending)
         std::set<int> unique_years;
@@ -60,6 +72,8 @@ void filterStations(std::unordered_map<int, Station>& stations) {
             continue;
         }
 
+        precalculate_stations(station);
+
         // If station succeed, move to next
         ++it;
     }
@@ -68,30 +82,15 @@ void filterStations(std::unordered_map<int, Station>& stations) {
 std::vector<Anomaly> detectAnomalies(const std::unordered_map<int, Station>& stations) {
     std::vector<Anomaly> anomalies;
 
-    struct SumCount {
-        double sum = 0.0;   // Sum of values for this MONTH and this YEAR
-        int count = 0;      // Count of measurements of this MONTH and this YEAR
-    };
-
     for (const auto& pair : stations) {
         const Station& station = pair.second;
 
-        // MONTH -> (YEAR -> SUM and COUNT)
-        // (map makes it in order)
-        std::unordered_map<int, std::map<int, SumCount>> monthly_stats;
-
-        // Just aggregate
-        for (const auto& m : station.measurements) {
-            monthly_stats[m.month][m.year].sum += m.value;
-            monthly_stats[m.month][m.year].count++;
-        }
-
         // Systematicly find anomalies
         for (int month = 1; month <= 12; ++month) {
-            // If month measurement data does not exist, return .end()
-            if (monthly_stats.find(month) == monthly_stats.end()) continue;
+            auto month_it = station.monthly_yearly_stats.find(month);
+            if (month_it == station.monthly_yearly_stats.end()) continue;
 
-            const auto& yearly_data = monthly_stats[month];
+            const auto& yearly_data = month_it->second;
             if (yearly_data.size() < 2) continue;   // Cannot compare
 
             std::map<int, double> yearly_averages;

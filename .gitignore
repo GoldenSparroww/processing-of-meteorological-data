@@ -43,3 +43,7 @@
 /.idea
 /cmake-build-debug*
 /cmake-build-release*
+tests/.venv
+data/meteodata*/**/*
+!data/meteodata*/**/.gitkeep
+/build_test

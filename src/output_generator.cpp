@@ -5,9 +5,10 @@
 #include <iomanip>
 #include <iostream>
 #include "../include/output_generator.h"
+#include "../include/czmap_svg.h"
 
 void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
-    std::ofstream file(filePath);
+    std::ofstream file(filePath, std::ios::binary);
 
     if (!file.is_open()) {
         throw std::runtime_error("Cannot create file for output CSV: " + filePath);
@@ -25,14 +26,8 @@ void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& f
     }
 }
 
-void generateMaps(const std::unordered_map<int, Station>& stations, const std::string& templatePath) {
-    std::ifstream t_file(templatePath);
-    if (!t_file.is_open()) {
-        throw std::runtime_error("Cannot open map template: " + templatePath);
-    }
-    std::stringstream buffer;
-    buffer << t_file.rdbuf();
-    std::string svg_template = buffer.str();
+void generateMaps(const std::unordered_map<int, Station>& stations) {
+    std::string svg_template = CZ_MAP_SVG_TEMPLATE;
 
     // Remove </svg>, so we can add elements
     size_t pos = svg_template.rfind("</svg>");
@@ -49,31 +44,22 @@ void generateMaps(const std::unordered_map<int, Station>& stations, const std::s
     double global_max = std::numeric_limits<double>::lowest();
 
     for (const auto& pair : stations) {
-        for (const auto& m : pair.second.measurements) {
+        const Station& st = pair.second;
+
+        for (const auto& m : st.measurements) {
             if (m.value < global_min) global_min = m.value;
             if (m.value > global_max) global_max = m.value;
+        }
+
+        for (const auto& m_pair : st.monthly_stats) {
+            int month = m_pair.first;
+            double avg = m_pair.second.sum / m_pair.second.count;
+            station_monthly_averages[st.id][month] = avg;
         }
     }
 
     std::cout << "Global min: " << global_min << '\n';
     std::cout << "Global max: " << global_max << '\n';
-
-    for (const auto& pair : stations) {
-        const Station& st = pair.second;
-
-        // month -> {sum, count}
-        std::unordered_map<int, std::pair<double, int>> month_aggr;
-        for (const auto& m : st.measurements) {
-            month_aggr[m.month].first += m.value;
-            month_aggr[m.month].second++;
-        }
-
-        for (const auto& m_pair : month_aggr) {
-            int month = m_pair.first;
-            double avg = m_pair.second.first / m_pair.second.second;
-            station_monthly_averages[st.id][month] = avg;
-        }
-    }
 
     double temp_range = global_max - global_min;
     if (temp_range == 0) temp_range = 1; // zero division secure
@@ -94,7 +80,7 @@ void generateMaps(const std::unordered_map<int, Station>& stations, const std::s
     // Generate maps for each month
     for (int month = 1; month <= 12; ++month) {
         std::string filename = mesice[month - 1] + ".svg";
-        std::ofstream out_file(filename);
+        std::ofstream out_file(filename, std::ios::binary);
 
         out_file << svg_template; // Write basic map without closing tag
 
