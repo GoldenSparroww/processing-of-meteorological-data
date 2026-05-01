@@ -2,9 +2,9 @@
 #include <stdexcept>
 #include <sstream>
 #include <limits>
-#include "../include/output_generator.h"
-
+#include <iomanip>
 #include <iostream>
+#include "../include/output_generator.h"
 
 void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
     std::ofstream file(filePath);
@@ -21,7 +21,7 @@ void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& f
         file << anomaly.station_id << ";"
              << anomaly.month << ";"
              << anomaly.year2 << ";"
-             << anomaly.diff << "\n";
+             << std::fixed << std::setprecision(2) << anomaly.diff << "\n";
     }
 }
 
@@ -44,8 +44,19 @@ void generateMaps(const std::unordered_map<int, Station>& stations, const std::s
 
     // 2D hashtable: station ID -> (month number -> avg. temp.)
     std::unordered_map<int, std::unordered_map<int, double>> station_monthly_averages;
+
     double global_min = std::numeric_limits<double>::max();
     double global_max = std::numeric_limits<double>::lowest();
+
+    for (const auto& pair : stations) {
+        for (const auto& m : pair.second.measurements) {
+            if (m.value < global_min) global_min = m.value;
+            if (m.value > global_max) global_max = m.value;
+        }
+    }
+
+    std::cout << "Global min: " << global_min << '\n';
+    std::cout << "Global max: " << global_max << '\n';
 
     for (const auto& pair : stations) {
         const Station& st = pair.second;
@@ -61,14 +72,8 @@ void generateMaps(const std::unordered_map<int, Station>& stations, const std::s
             int month = m_pair.first;
             double avg = m_pair.second.first / m_pair.second.second;
             station_monthly_averages[st.id][month] = avg;
-
-            if (avg < global_min) global_min = avg;
-            if (avg > global_max) global_max = avg;
         }
     }
-
-    std::cout << global_min << '\n';
-    std::cout << global_max << '\n';
 
     double temp_range = global_max - global_min;
     if (temp_range == 0) temp_range = 1; // zero division secure
@@ -81,8 +86,10 @@ void generateMaps(const std::unordered_map<int, Station>& stations, const std::s
     const double SVG_WIDTH = 1412.0;
     const double SVG_HEIGHT = 809.0;
 
-    const std::string mesice[12] = {"leden", "unor", "brezen", "duben", "kveten", "cerven",
-                                    "cervenec", "srpen", "zari", "rijen", "listopad", "prosinec"};
+    const std::string mesice[12] = {
+        "leden", "unor", "brezen", "duben", "kveten", "cerven",
+        "cervenec", "srpen", "zari", "rijen", "listopad", "prosinec"
+    };
 
     // Generate maps for each month
     for (int month = 1; month <= 12; ++month) {

@@ -48,7 +48,12 @@ void filterStations(std::unordered_map<int, Station>& stations) {
         }
 
         // Check if station had at least an average of 100 mesurements per year (>= 100)
-        double average = static_cast<double>(station.measurements.size()) / static_cast<double>(unique_years.size());
+        // Continuation epoch (last year - fist year + 1)
+        int min_year = *unique_years.begin();
+        int max_year = *unique_years.rbegin();
+        int period_length = max_year - min_year + 1;
+
+        double average = static_cast<double>(station.measurements.size()) / static_cast<double>(period_length);
 
         if (average < 100.0) {
             it = stations.erase(it);
