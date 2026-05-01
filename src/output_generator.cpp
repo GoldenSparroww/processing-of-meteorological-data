@@ -1,13 +1,12 @@
 #include <fstream>
 #include <stdexcept>
-#include <sstream>
 #include <limits>
 #include <iomanip>
 #include <iostream>
 #include "../include/output_generator.h"
 #include "../include/czmap_svg.h"
 
-void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
+void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
     std::ofstream file(filePath, std::ios::binary);
 
     if (!file.is_open()) {
@@ -26,7 +25,7 @@ void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& f
     }
 }
 
-void generateMaps(const std::unordered_map<int, Station>& stations) {
+void generate_maps(const std::unordered_map<int, Station>& stations) {
     std::string svg_template = CZ_MAP_SVG_TEMPLATE;
 
     // Remove </svg>, so we can add elements

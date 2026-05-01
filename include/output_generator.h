@@ -7,9 +7,9 @@
 #include "data_types.h"
 
 // Write anomalies into new CSV file
-void exportAnomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath);
+void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath);
 
 // Generate 12 SVG maps
-void generateMaps(const std::unordered_map<int, Station>& stations);
+void generate_maps(const std::unordered_map<int, Station>& stations);
 
 #endif

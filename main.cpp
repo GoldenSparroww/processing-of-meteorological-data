@@ -51,19 +51,19 @@ int main(const int argc, const char* argv[]) {
         auto start_time = std::chrono::high_resolution_clock::now();
 
         // Data loading (common for both versions)
-        auto stations = loadStations(fileStations);
-        loadMeasurements(fileMeasurements, stations);
+        auto stations = load_stations(fileStations);
+        load_measurements(fileMeasurements, stations);
 
         if (useParallel) {
             std::cout << "Starting parallel version...\n";
         } else {
             std::cout << "Starting serial version...\n";
-            filterStations(stations);
+            filter_stations(stations);
             std::cout << stations.size() << "\n";
-            auto anomalies = detectAnomalies(stations);
+            auto anomalies = detect_anomalies(stations);
             deterministic_sort(anomalies);
-            exportAnomalies(anomalies, "vykyvy.csv");
-            generateMaps(stations);
+            export_anomalies(anomalies, "vykyvy.csv");
+            generate_maps(stations);
         }
 
         // Stop stopwatch and calculate duration

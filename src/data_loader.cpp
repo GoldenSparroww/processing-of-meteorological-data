@@ -5,7 +5,7 @@
 #include "../include/data_loader.h"
 #include "../include/data_types.h"
 
-std::unordered_map<int, Station> loadStations(const std::string& filePath) {
+std::unordered_map<int, Station> load_stations(const std::string& filePath) {
     std::unordered_map<int, Station> stations;
     std::ifstream file(filePath);
 
@@ -42,7 +42,7 @@ std::unordered_map<int, Station> loadStations(const std::string& filePath) {
     return stations;
 }
 
-void loadMeasurements(const std::string& filePath, std::unordered_map<int, Station>& stations) {
+void load_measurements(const std::string& filePath, std::unordered_map<int, Station>& stations) {
     std::ifstream file(filePath);
 
     if (!file.is_open()) {

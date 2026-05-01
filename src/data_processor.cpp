@@ -16,7 +16,7 @@ void precalculate_stations(Station& station) {
     }
 }
 
-void filterStations(std::unordered_map<int, Station>& stations) {
+void filter_stations(std::unordered_map<int, Station>& stations) {
     for (auto it = stations.begin(); it != stations.end(); ) {
         Station& station = it->second;
 
@@ -79,7 +79,7 @@ void filterStations(std::unordered_map<int, Station>& stations) {
     }
 }
 
-std::vector<Anomaly> detectAnomalies(const std::unordered_map<int, Station>& stations) {
+std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& stations) {
     std::vector<Anomaly> anomalies;
 
     for (const auto& pair : stations) {
