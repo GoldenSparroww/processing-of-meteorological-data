@@ -16,7 +16,8 @@ void precalculate_stations(Station& station) {
     }
 }
 
-void filter_stations(std::unordered_map<int, Station>& stations) {
+void filter_stations(std::unordered_map<int, Station>& stations, bool is_parallel) {
+
     for (auto it = stations.begin(); it != stations.end(); ) {
         Station& station = it->second;
 
@@ -79,7 +80,7 @@ void filter_stations(std::unordered_map<int, Station>& stations) {
     }
 }
 
-std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& stations) {
+std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& stations, bool is_parallel) {
     std::vector<Anomaly> anomalies;
 
     for (const auto& pair : stations) {

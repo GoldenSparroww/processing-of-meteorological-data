@@ -25,7 +25,7 @@ void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& 
     }
 }
 
-void generate_maps(const std::unordered_map<int, Station>& stations) {
+void generate_maps(const std::unordered_map<int, Station>& stations, bool is_parallel) {
     std::string svg_template = CZ_MAP_SVG_TEMPLATE;
 
     // Remove </svg>, so we can add elements
