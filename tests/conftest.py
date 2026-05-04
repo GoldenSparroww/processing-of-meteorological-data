@@ -1,5 +1,6 @@
 import os
 import subprocess
+import shutil
 import pytest
 
 # Central path definitions
@@ -21,7 +22,7 @@ def paths():
 
 @pytest.fixture(scope="session")
 def compiled_executable(paths):
-    """Builds the project once for the entire test session."""
+    """Builds the project once for the entire test session and cleans up after."""
     if not os.path.exists(paths["build"]):
         os.makedirs(paths["build"])
 
@@ -42,4 +43,8 @@ def compiled_executable(paths):
     if not exec_path:
         pytest.exit(f"Binary {paths['exec_name']} not found.")
 
-    return exec_path
+    yield exec_path
+
+    # Teardown
+    if os.path.exists(paths["build"]):
+        shutil.rmtree(paths["build"])
