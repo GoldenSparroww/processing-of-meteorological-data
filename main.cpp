@@ -50,21 +50,27 @@ int main(const int argc, const char* argv[]) {
         // Start stopwatch
         auto start_time = std::chrono::high_resolution_clock::now();
 
-        // Data loading (common for both versions)
-        auto stations = load_stations(fileStations);
-        load_measurements(fileMeasurements, stations);
-
+        // Data loading
+        std::unordered_map<int, Station> stations;
         if (is_parallel) {
             std::cout << "Starting parallel version...\n";
+            stations = load_stations_parallel(fileStations);
+            load_measurements_parallel(fileMeasurements, stations);
         } else {
             std::cout << "Starting serial version...\n";
+            stations = load_stations(fileStations);
+            load_measurements(fileMeasurements, stations);
         }
+
+        auto end_time_ = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed_ = end_time_ - start_time;
+        std::cout << "Data loaded in:: " << elapsed_.count() << " ms\n";
 
         // Process data
         filter_stations(stations, is_parallel);
         std::cout << stations.size() << "\n";
         auto anomalies = detect_anomalies(stations, is_parallel);
-        deterministic_sort(anomalies);
+        //deterministic_sort(anomalies);
         export_anomalies(anomalies, "vykyvy.csv");
         generate_maps(stations, is_parallel);
 

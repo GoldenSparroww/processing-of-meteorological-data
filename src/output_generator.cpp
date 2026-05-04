@@ -3,6 +3,8 @@
 #include <limits>
 #include <iomanip>
 #include <iostream>
+#include <omp.h>
+#include <algorithm>
 #include "../include/output_generator.h"
 #include "../include/czmap_svg.h"
 
@@ -42,6 +44,7 @@ void generate_maps(const std::unordered_map<int, Station>& stations, bool is_par
     double global_min = std::numeric_limits<double>::max();
     double global_max = std::numeric_limits<double>::lowest();
 
+    // TODO
     for (const auto& pair : stations) {
         const Station& st = pair.second;
 
@@ -76,7 +79,21 @@ void generate_maps(const std::unordered_map<int, Station>& stations, bool is_par
         "cervenec", "srpen", "zari", "rijen", "listopad", "prosinec"
     };
 
+    //std::ostream& out_stream = std::cout;
+    // TODO
+    std::vector<Station> sorted_stations;
+    sorted_stations.reserve(stations.size());
+    for (const auto& pair : stations) {
+        sorted_stations.push_back(pair.second);
+    }
+    std::sort(sorted_stations.begin(), sorted_stations.end(), [](const Station& a, const Station& b) {
+        return a.id < b.id;
+    });
+
     // Generate maps for each month
+    #pragma omp parallel for if(is_parallel) default(none) \
+    shared(stations, station_monthly_averages, global_min, temp_range, \
+    lon_min, lon_max, lat_max, lat_min, SVG_WIDTH, SVG_HEIGHT, mesice, svg_template)
     for (int month = 1; month <= 12; ++month) {
         std::string filename = mesice[month - 1] + ".svg";
         std::ofstream out_file(filename, std::ios::binary);
