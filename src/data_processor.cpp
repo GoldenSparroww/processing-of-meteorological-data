@@ -4,6 +4,7 @@
 #include <limits>
 #include "../include/data_processor.h"
 
+// TODO
 void precalculate_stations(Station& station) {
     for (const auto& m : station.measurements) {
         // Aggregate month -> year
@@ -16,24 +17,24 @@ void precalculate_stations(Station& station) {
     }
 }
 
-void filter_stations(std::unordered_map<int, Station>& stations, bool is_parallel) {
+void filter_stations(std::vector<Station>& stations, bool is_parallel) {
+    // Mask to detect items to delete
+    std::vector<char> keep(stations.size(), 0);
 
-    for (auto it = stations.begin(); it != stations.end(); ) {
-        Station& station = it->second;
+    #pragma omp parallel for if(is_parallel) default(none) shared(stations, keep)
+    for (int i = 0; i < stations.size(); ++i) {
+        Station& station = stations[i];
 
-        // Set guarantees, that years are going to be sorted (ascending)
+        // Set guarantees: uniqueness, descending order
         std::set<int> unique_years;
         for (const auto& m : station.measurements) {
             unique_years.insert(m.year);
         }
 
-        // If station got less than 5 years of measurements, then end (fast check)
         if (unique_years.size() < 5) {
-            it = stations.erase(it);
             continue;
         }
 
-        // Check if those 5 years were continuous
         int max_continuous = 1;
         int current_continuous = 1;
         int prev_year = -1;
@@ -56,12 +57,9 @@ void filter_stations(std::unordered_map<int, Station>& stations, bool is_paralle
         }
 
         if (max_continuous < 5) {
-            it = stations.erase(it);
             continue;
         }
 
-        // Check if station had at least an average of 100 measurements per year (>= 100)
-        // Continuation epoch (last year - fist year + 1)
         int min_year = *unique_years.begin();
         int max_year = *unique_years.rbegin();
         int period_length = max_year - min_year + 1;
@@ -69,22 +67,35 @@ void filter_stations(std::unordered_map<int, Station>& stations, bool is_paralle
         double average = static_cast<double>(station.measurements.size()) / static_cast<double>(period_length);
 
         if (average < 100.0) {
-            it = stations.erase(it);
             continue;
         }
 
         precalculate_stations(station);
 
-        // If station succeed, move to next
-        ++it;
+        // If station passes, mark as 1 -> keep
+        keep[i] = 1;
     }
+
+    // Apply mask
+    std::vector<Station> filtered;
+    filtered.reserve(stations.size());
+
+    // TODO
+    for (size_t i = 0; i < stations.size(); ++i) {
+        if (keep[i]) {
+            filtered.push_back(std::move(stations[i]));
+        }
+    }
+
+    stations = std::move(filtered);
 }
 
-std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& stations, bool is_parallel) {
+std::vector<Anomaly> detect_anomalies(const std::vector<Station>& stations, bool is_parallel) {
     std::vector<Anomaly> anomalies;
 
-    for (const auto& pair : stations) {
-        const Station& station = pair.second;
+    #pragma omp parallel for if(is_parallel) default(none) shared(stations, anomalies)
+    for (int i = 0; i < stations.size(); ++i) {
+        const Station& station = stations[i];
 
         // Systematically find anomalies
         for (int month = 1; month <= 12; ++month) {
@@ -125,7 +136,10 @@ std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& st
                     double diff = std::abs(curr_avg - prev_avg);
 
                     if (diff > threshold) {
-                        anomalies.push_back({station.id, month, curr_year, diff});
+                        #pragma omp critical
+                        {
+                            anomalies.push_back({station.id, month, curr_year, diff});
+                        }
                     }
                 }
                 prev_year = curr_year;
@@ -136,4 +150,15 @@ std::vector<Anomaly> detect_anomalies(const std::unordered_map<int, Station>& st
     }
 
     return anomalies;
+}
+
+std::vector<Station> hashmap_to_vector(std::unordered_map<int, Station>& map) {
+    std::vector<Station> vector;
+    vector.reserve(map.size());
+
+    for (auto& pair : map) {
+        vector.push_back(std::move(pair.second));
+    }
+
+    return vector;
 }

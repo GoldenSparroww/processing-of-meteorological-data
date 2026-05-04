@@ -10,6 +10,6 @@
 void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath);
 
 // Generate 12 SVG maps
-void generate_maps(const std::unordered_map<int, Station>& stations, bool is_parallel);
+void generate_maps(const std::vector<Station>& stations, bool is_parallel);
 
 #endif

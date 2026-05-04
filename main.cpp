@@ -34,27 +34,29 @@ int main(const int argc, const char* argv[]) {
         auto start_time = std::chrono::high_resolution_clock::now();
 
         // Data loading
-        std::unordered_map<int, Station> stations;
+        std::unordered_map<int, Station> stations_map;
         if (is_parallel) {
             std::cout << "Starting parallel version...\n";
-            stations = load_stations_parallel(fileStations);
-            load_measurements_parallel(fileMeasurements, stations);
+            stations_map = load_stations_parallel(fileStations);
+            load_measurements_parallel(fileMeasurements, stations_map);
         } else {
             std::cout << "Starting serial version...\n";
-            stations = load_stations(fileStations);
-            load_measurements(fileMeasurements, stations);
+            stations_map = load_stations(fileStations);
+            load_measurements(fileMeasurements, stations_map);
         }
+        auto stations_vector = hashmap_to_vector(stations_map);
+        stations_map.clear();
 
         auto end_time_ = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed_ = end_time_ - start_time;
         std::cout << "Data loaded in:: " << elapsed_.count() << " ms\n";
 
         // Process data
-        filter_stations(stations, is_parallel);
-        std::cout << stations.size() << "\n";
-        auto anomalies = detect_anomalies(stations, is_parallel);
+        filter_stations(stations_vector, is_parallel);
+        std::cout << stations_vector.size() << "\n";
+        auto anomalies = detect_anomalies(stations_vector, is_parallel);
         export_anomalies(anomalies, "vykyvy.csv");
-        generate_maps(stations, is_parallel);
+        generate_maps(stations_vector, is_parallel);
 
         // Stop stopwatch and calculate duration
         auto end_time = std::chrono::high_resolution_clock::now();
