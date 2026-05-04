@@ -30,5 +30,7 @@ add_executable(upp_sp1 ${SOURCES})
 
 target_include_directories(upp_sp1 PRIVATE include)
 
-target_compile_options(upp_sp1 PRIVATE)
-
+target_compile_options(upp_sp1 PRIVATE
+        $<$<CXX_COMPILER_ID:MSVC>:/W4>
+        $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra>
+)
