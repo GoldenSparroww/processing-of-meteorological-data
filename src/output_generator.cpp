@@ -55,7 +55,7 @@ void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
     double global_max = std::numeric_limits<double>::lowest();
 
     #pragma omp parallel for if(is_parallel) default(none) shared(stations) reduction(min: global_min) reduction(max: global_max)
-    for (int i = 0; i < stations.size(); ++i) {
+    for (size_t i = 0; i < stations.size(); ++i) {
         const Station& st = stations[i];
 
         for (const auto& m : st.measurements) {

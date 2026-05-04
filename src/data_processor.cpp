@@ -22,7 +22,7 @@ void filter_stations(std::vector<Station>& stations, bool is_parallel) {
     std::vector<char> keep(stations.size(), 0);
 
     #pragma omp parallel for if(is_parallel) default(none) shared(stations, keep)
-    for (int i = 0; i < stations.size(); ++i) {
+    for (size_t i = 0; i < stations.size(); ++i) {
         Station& station = stations[i];
 
         // Set guarantees: uniqueness, descending order
@@ -94,7 +94,7 @@ std::vector<Anomaly> detect_anomalies(const std::vector<Station>& stations, bool
     std::vector<Anomaly> anomalies;
 
     #pragma omp parallel for if(is_parallel) default(none) shared(stations, anomalies)
-    for (int i = 0; i < stations.size(); ++i) {
+    for (size_t i = 0; i < stations.size(); ++i) {
         const Station& station = stations[i];
 
         // Systematically find anomalies
