@@ -51,3 +51,5 @@ data/meteodata*/**/*
 /__pycache__
 /.pytest_cache
 /build
+/.vs/**/*
+!/.vs/launch.vs.json

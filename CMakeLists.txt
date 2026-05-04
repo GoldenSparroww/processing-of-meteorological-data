@@ -10,8 +10,8 @@ project(
 set(CMAKE_CXX_STANDARD 20)
 
 IF(MSVC)
-    ADD_COMPILE_OPTIONS("/openmp")
-    ADD_LINK_OPTIONS("/openmp")
+    ADD_COMPILE_OPTIONS("-openmp:llvm")
+    ADD_LINK_OPTIONS("-openmp:llvm")
 ELSE()
     ADD_COMPILE_OPTIONS("-fopenmp")
     ADD_LINK_OPTIONS("-fopenmp")
@@ -30,5 +30,5 @@ add_executable(upp_sp1 ${SOURCES})
 
 target_include_directories(upp_sp1 PRIVATE include)
 
-target_compile_options(upp_sp1 PRIVATE -Wall -Wextra)
+target_compile_options(upp_sp1 PRIVATE)
 
