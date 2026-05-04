@@ -3,8 +3,9 @@
 
 #include <vector>
 #include <string>
-#include <unordered_map>
 #include "data_types.h"
+
+constexpr std::string OUTPUT_CSV_NAME = "vykyvy.csv";
 
 // Write anomalies into new CSV file
 void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath);

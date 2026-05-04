@@ -7,7 +7,7 @@
 #include "include/data_types.h"
 
 int main(const int argc, const char* argv[]) {
-    // Check number of arguments
+    // Check arguments
     if (argc != 4) {
         std::cerr << "Error: Invalid number of arguments.\n";
         std::cerr << "Usage: ./upp_sp1 <stations.csv> <measurements.csv> <--serial | --parallel>\n";
@@ -32,18 +32,12 @@ int main(const int argc, const char* argv[]) {
     try {
         // Start stopwatch
         auto start_time = std::chrono::high_resolution_clock::now();
+        is_parallel ? std::cout << "Starting parallel version...\n" : std::cout << "Starting serial version...\n";
 
         // Data loading
-        std::unordered_map<int, Station> stations_map;
-        if (is_parallel) {
-            std::cout << "Starting parallel version...\n";
-            stations_map = load_stations_parallel(fileStations);
-            load_measurements_parallel(fileMeasurements, stations_map);
-        } else {
-            std::cout << "Starting serial version...\n";
-            stations_map = load_stations(fileStations);
-            load_measurements(fileMeasurements, stations_map);
-        }
+        std::unordered_map<int, Station> stations_map = load_stations(fileStations, is_parallel);
+        load_measurements(fileMeasurements, stations_map, is_parallel);
+
         auto stations_vector = hashmap_to_vector(stations_map);
         stations_map.clear();
 
@@ -55,7 +49,7 @@ int main(const int argc, const char* argv[]) {
         filter_stations(stations_vector, is_parallel);
         std::cout << stations_vector.size() << "\n";
         auto anomalies = detect_anomalies(stations_vector, is_parallel);
-        export_anomalies(anomalies, "vykyvy.csv");
+        export_anomalies(anomalies, OUTPUT_CSV_NAME);
         generate_maps(stations_vector, is_parallel);
 
         // Stop stopwatch and calculate duration

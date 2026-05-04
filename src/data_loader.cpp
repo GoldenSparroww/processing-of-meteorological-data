@@ -190,50 +190,12 @@ namespace {
     }
 }
 
-std::unordered_map<int, Station> load_stations(const std::string& filePath) {
-    std::unordered_map<int, Station> stations;
-    std::string buffer = read_file_to_buffer(filePath);
-    size_t end_idx = buffer.size();
-
-    // Skip header
-    size_t current_pos = buffer.find('\n');
-    current_pos = (current_pos != std::string::npos) ? current_pos + 1 : end_idx;
-
-    // Iterate through lines
-    while (current_pos < end_idx) {
-        Station station = parse_station_line(buffer, current_pos, end_idx);
-        stations[station.id] = station;
-    }
-
-    return stations;
-}
-
-void load_measurements(const std::string& filePath, std::unordered_map<int, Station>& stations) {
-    std::string buffer = read_file_to_buffer(filePath);
-    size_t end_idx = buffer.size();
-
-    // Skip header
-    size_t current_pos = buffer.find('\n');
-    current_pos = (current_pos != std::string::npos) ? current_pos + 1 : end_idx;
-
-    // Iterate through lines
-    while (current_pos < end_idx) {
-        int parsed_station_id;
-        Measurement m;
-        parse_measurement_line(buffer, current_pos, end_idx, parsed_station_id, m);
-
-        auto it = stations.find(parsed_station_id);
-        if (it != stations.end()) {
-            it->second.measurements.push_back(m);
-        }
-    }
-}
-
-std::unordered_map<int, Station> load_stations_parallel(const std::string& filePath) {
+std::unordered_map<int, Station> load_stations(const std::string& filePath, bool is_parallel) {
     std::unordered_map<int, Station> stations;
     std::string buffer = read_file_to_buffer(filePath);
 
-    int num_threads = omp_get_max_threads();
+    // Set thread count based on is_parallel
+    int num_threads = is_parallel ? omp_get_max_threads() : 1;
     std::vector<size_t> chunk_boundaries(num_threads + 1, 0);
 
     // Calculate thread boundaries
@@ -248,7 +210,7 @@ std::unordered_map<int, Station> load_stations_parallel(const std::string& fileP
         chunk_boundaries[i] = (actual_pos != std::string::npos) ? actual_pos + 1 : buffer.size();
     }
 
-    #pragma omp parallel default(none) shared(buffer, chunk_boundaries, stations)
+    #pragma omp parallel if(is_parallel) num_threads(num_threads) default(none) shared(buffer, chunk_boundaries, stations)
     {
         int thread_id = omp_get_thread_num();
         size_t current_pos = chunk_boundaries[thread_id];
@@ -274,10 +236,11 @@ std::unordered_map<int, Station> load_stations_parallel(const std::string& fileP
     return stations;
 }
 
-void load_measurements_parallel(const std::string& filePath, std::unordered_map<int, Station>& stations) {
+void load_measurements(const std::string& filePath, std::unordered_map<int, Station>& stations, bool is_parallel) {
     std::string buffer = read_file_to_buffer(filePath);
 
-    int num_threads = omp_get_max_threads();
+    // Set thread count based on is_parallel
+    int num_threads = is_parallel ? omp_get_max_threads() : 1;
     std::vector<size_t> chunk_boundaries(num_threads + 1, 0);
 
     // Calculate thread boundaries
@@ -292,7 +255,7 @@ void load_measurements_parallel(const std::string& filePath, std::unordered_map<
         chunk_boundaries[i] = (actual_pos != std::string::npos) ? actual_pos + 1 : buffer.size();
     }
 
-    #pragma omp parallel default(none) shared(buffer, chunk_boundaries, stations)
+    #pragma omp parallel if(is_parallel) num_threads(num_threads) default(none) shared(buffer, chunk_boundaries, stations)
     {
         int thread_id = omp_get_thread_num();
         size_t current_pos = chunk_boundaries[thread_id];
