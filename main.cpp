@@ -6,23 +6,6 @@
 #include "include/output_generator.h"
 #include "include/data_types.h"
 
-/**
- * Test method
- * Currently only for debugging purpose (checking files somehow manually)
- * @param anomalies
- */
-void deterministic_sort(std::vector<Anomaly>& anomalies) {
-    std::sort(anomalies.begin(), anomalies.end(), [](const Anomaly& a, const Anomaly& b) {
-        if (a.station_id != b.station_id) {
-            return a.station_id < b.station_id;
-        }
-        if (a.month != b.month) {
-            return a.month < b.month;
-        }
-        return a.year2 < b.year2;
-    });
-}
-
 int main(const int argc, const char* argv[]) {
     // Check number of arguments
     if (argc != 4) {
@@ -70,7 +53,6 @@ int main(const int argc, const char* argv[]) {
         filter_stations(stations, is_parallel);
         std::cout << stations.size() << "\n";
         auto anomalies = detect_anomalies(stations, is_parallel);
-        //deterministic_sort(anomalies);
         export_anomalies(anomalies, "vykyvy.csv");
         generate_maps(stations, is_parallel);
 
