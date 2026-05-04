@@ -74,11 +74,13 @@ def run_and_verify(exec_path, paths, dataset_size, mode):
 
             assert is_match, f"File mismatch: {filename}"
 
+@pytest.mark.all
 @pytest.mark.serial
 @pytest.mark.parametrize("size", ["small", "medium", "large"])
 def test_serial(compiled_executable, paths, size):
     run_and_verify(compiled_executable, paths, size, "--serial")
 
+@pytest.mark.all
 @pytest.mark.parallel
 @pytest.mark.parametrize("size", ["small", "medium", "large"])
 def test_parallel(compiled_executable, paths, size):

@@ -2,6 +2,7 @@ import subprocess
 import tempfile
 import pytest
 
+@pytest.mark.all
 @pytest.mark.build
 def test_compilation_basic(paths):
     """Verify that the project can be successfully compiled."""
@@ -18,6 +19,7 @@ def test_compilation_basic(paths):
         )
         assert build_res.returncode == 0, f"Compilation failed: {build_res.stderr}"
 
+@pytest.mark.all
 @pytest.mark.build
 def test_compilation_strict(paths):
     """Verify compilation with strict flags and no warnings."""
