@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <unordered_map>
 
 struct Measurement {
     int year;
@@ -42,6 +43,7 @@ enum ErrorCode {
     EXIT_OK = EXIT_SUCCESS,
     EXIT_INVALID_ARGS_ERR = 1,
     EXIT_INPUT_FILE_ERR = 2,
+    EXIT_NOT_ENOUGH_MEMORY_ERR = 3,
     EXIT_GENERAL_ERR = 100,
 };
 

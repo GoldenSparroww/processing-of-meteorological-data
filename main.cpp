@@ -6,25 +6,8 @@
 #include "include/output_generator.h"
 #include "include/data_types.h"
 
-/**
- * Test method
- * Currently only for debugging purpose (checking files somehow manually)
- * @param anomalies
- */
-void deterministic_sort(std::vector<Anomaly>& anomalies) {
-    std::sort(anomalies.begin(), anomalies.end(), [](const Anomaly& a, const Anomaly& b) {
-        if (a.station_id != b.station_id) {
-            return a.station_id < b.station_id;
-        }
-        if (a.month != b.month) {
-            return a.month < b.month;
-        }
-        return a.year2 < b.year2;
-    });
-}
-
 int main(const int argc, const char* argv[]) {
-    // Check number of arguments
+    // Check arguments
     if (argc != 4) {
         std::cerr << "Error: Invalid number of arguments.\n";
         std::cerr << "Usage: ./upp_sp1 <stations.csv> <measurements.csv> <--serial | --parallel>\n";
@@ -33,14 +16,14 @@ int main(const int argc, const char* argv[]) {
 
     const std::string fileStations = argv[1];
     const std::string fileMeasurements = argv[2];
-    bool useParallel = false;
+    bool is_parallel = false;
 
     // Check mode flag
     const std::string flag = argv[3];
     if (flag == "-s" || flag == "--serial") {
-        useParallel = false;
+        is_parallel = false;
     } else if (flag == "-p" || flag == "--parallel") {
-        useParallel = true;
+        is_parallel = true;
     } else {
         std::cerr << "Error: Invalid flag '" << flag << "'. Expected --serial or --parallel.\n";
         return EXIT_INVALID_ARGS_ERR;
@@ -49,31 +32,37 @@ int main(const int argc, const char* argv[]) {
     try {
         // Start stopwatch
         auto start_time = std::chrono::high_resolution_clock::now();
+        is_parallel ? std::cout << "Starting parallel version...\n" : std::cout << "Starting serial version...\n";
 
-        // Data loading (common for both versions)
-        auto stations = load_stations(fileStations);
-        load_measurements(fileMeasurements, stations);
+        // Data loading
+        std::unordered_map<int, Station> stations_map = load_stations(fileStations, is_parallel);
+        load_measurements(fileMeasurements, stations_map, is_parallel);
 
-        if (useParallel) {
-            std::cout << "Starting parallel version...\n";
-        } else {
-            std::cout << "Starting serial version...\n";
-            filter_stations(stations);
-            std::cout << stations.size() << "\n";
-            auto anomalies = detect_anomalies(stations);
-            deterministic_sort(anomalies);
-            export_anomalies(anomalies, "vykyvy.csv");
-            generate_maps(stations);
-        }
+        auto stations_vector = hashmap_to_vector(stations_map);
+        stations_map.clear();
+
+        auto end_time_ = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed_ = end_time_ - start_time;
+        std::cout << "Data loaded in: " << elapsed_.count() << " ms\n";
+
+        // Process data
+        filter_stations(stations_vector, is_parallel);
+        std::cout << stations_vector.size() << "\n";
+        auto anomalies = detect_anomalies(stations_vector, is_parallel);
+        export_anomalies(anomalies, OUTPUT_CSV_NAME);
+        generate_maps(stations_vector, is_parallel);
 
         // Stop stopwatch and calculate duration
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
-
         std::cout << "Processing completed. Total time: " << elapsed.count() << " ms\n";
-
-    } catch (const std::exception& e) {
-        std::cerr << "A critical error occurred: " << e.what() << '\n';
+    }
+    catch (const std::bad_alloc& e) {
+        std::cerr << "A critical error occurred. Not enough memory. (" << e.what() << ")\n";
+        return EXIT_NOT_ENOUGH_MEMORY_ERR;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "A critical error occurred. " << e.what() << '\n';
         return EXIT_GENERAL_ERR;
     }
 

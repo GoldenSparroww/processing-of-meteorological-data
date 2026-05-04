@@ -3,9 +3,27 @@
 #include <limits>
 #include <iomanip>
 #include <iostream>
+#include <omp.h>
+#include <algorithm>
 #include "../include/output_generator.h"
+
+#include <chrono>
+
 #include "../include/czmap_svg.h"
 
+constexpr double LON_MIN = 12.102209054269062;
+constexpr double LON_MAX = 18.866923511078615;
+constexpr double LAT_MAX = 51.03806105663445;
+constexpr double LAT_MIN = 48.521003814763994;
+constexpr double SVG_WIDTH = 1412.0;
+constexpr double SVG_HEIGHT = 809.0;
+constexpr std::string MONTHS[12] = {
+    "leden", "unor", "brezen", "duben", "kveten", "cerven",
+    "cervenec", "srpen", "zari", "rijen", "listopad", "prosinec"
+};
+std::string SVG_TEMPLATE = CZ_MAP_SVG_TEMPLATE;
+
+// NOTE: Writing to a file, have to be always sequential; we can only parallelize formating strings, but RAM usage rams up rapidly (need new buffer)
 void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
     std::ofstream file(filePath, std::ios::binary);
 
@@ -25,13 +43,11 @@ void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& 
     }
 }
 
-void generate_maps(const std::unordered_map<int, Station>& stations) {
-    std::string svg_template = CZ_MAP_SVG_TEMPLATE;
-
+void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
     // Remove </svg>, so we can add elements
-    size_t pos = svg_template.rfind("</svg>");
+    size_t pos = SVG_TEMPLATE.rfind("</svg>");
     if (pos != std::string::npos) {
-        svg_template.erase(pos);
+        SVG_TEMPLATE.erase(pos);
     } else {
         throw std::runtime_error("Invalid SVG fromat (missing </svg>)");
     }
@@ -42,18 +58,32 @@ void generate_maps(const std::unordered_map<int, Station>& stations) {
     double global_min = std::numeric_limits<double>::max();
     double global_max = std::numeric_limits<double>::lowest();
 
-    for (const auto& pair : stations) {
-        const Station& st = pair.second;
+    #pragma omp parallel for if(is_parallel) default(none) shared(stations) reduction(min: global_min) reduction(max: global_max)
+    for (size_t i = 0; i < stations.size(); ++i) {
+        const Station& st = stations[i];
 
         for (const auto& m : st.measurements) {
             if (m.value < global_min) global_min = m.value;
             if (m.value > global_max) global_max = m.value;
         }
+    }
 
+    // Fill with averages
+    #pragma omp parallel for if(is_parallel) default(none) shared(stations, station_monthly_averages)
+    for (size_t i = 0; i < stations.size(); ++i) {
+        const Station& st = stations[i];
+        std::unordered_map<int, double> local_averages;
+
+        // Local calculation
         for (const auto& m_pair : st.monthly_stats) {
             int month = m_pair.first;
             double avg = m_pair.second.sum / m_pair.second.count;
-            station_monthly_averages[st.id][month] = avg;
+            local_averages[month] = avg;
+        }
+
+        #pragma omp critical
+        {
+            station_monthly_averages[st.id] = std::move(local_averages);
         }
     }
 
@@ -63,29 +93,19 @@ void generate_maps(const std::unordered_map<int, Station>& stations) {
     double temp_range = global_max - global_min;
     if (temp_range == 0) temp_range = 1; // zero division secure
 
-    const double lon_min = 12.102209054269062;
-    const double lon_max = 18.866923511078615;
-    const double lat_max = 51.03806105663445;
-    const double lat_min = 48.521003814763994;
-
-    const double SVG_WIDTH = 1412.0;
-    const double SVG_HEIGHT = 809.0;
-
-    const std::string mesice[12] = {
-        "leden", "unor", "brezen", "duben", "kveten", "cerven",
-        "cervenec", "srpen", "zari", "rijen", "listopad", "prosinec"
-    };
-
+    //std::ostream& out_stream = std::cout;
     // Generate maps for each month
+    #pragma omp parallel for if(is_parallel) default(none) \
+    shared(stations, station_monthly_averages, global_min, temp_range, \
+    LON_MIN, LON_MAX, LAT_MAX, LAT_MIN, SVG_WIDTH, SVG_HEIGHT, MONTHS, SVG_TEMPLATE)
     for (int month = 1; month <= 12; ++month) {
-        std::string filename = mesice[month - 1] + ".svg";
+        std::string filename = MONTHS[month - 1] + ".svg";
         std::ofstream out_file(filename, std::ios::binary);
 
-        out_file << svg_template; // Write basic map without closing tag
+        out_file << SVG_TEMPLATE; // Write basic map without closing tag
 
         // (stations) points writing
-        for (const auto& pair : stations) {
-            const Station& st = pair.second;
+        for (const auto& st : stations) {
 
             if (station_monthly_averages[st.id].find(month) == station_monthly_averages[st.id].end()) {
                 continue;
@@ -93,8 +113,8 @@ void generate_maps(const std::unordered_map<int, Station>& stations) {
 
             double avg_temp = station_monthly_averages[st.id][month];
 
-            double x = ((st.longitude - lon_min) / (lon_max - lon_min)) * SVG_WIDTH;
-            double y = ((lat_max - st.latitude) / (lat_max - lat_min)) * SVG_HEIGHT;
+            double x = ((st.longitude - LON_MIN) / (LON_MAX - LON_MIN)) * SVG_WIDTH;
+            double y = ((LAT_MAX - st.latitude) / (LAT_MAX - LAT_MIN)) * SVG_HEIGHT;
 
             double t = (avg_temp - global_min) / temp_range;
             int r, g, b;

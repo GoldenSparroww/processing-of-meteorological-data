@@ -1,0 +1,18 @@
+{
+    "version": "0.2.1",
+    "defaults": {},
+    "configurations": [
+        {
+            "type": "default",
+            "project": "CMakeLists.txt",
+            "projectTarget": "upp_sp1.exe",
+            "name": "upp_sp1.exe",
+            "currentDir": "${workspaceRoot}",
+            "args": [
+                "data/meteodata_large/stanice.csv",
+                "data/meteodata_large/mereni.csv",
+                "--serial"
+            ]
+        }
+    ]
+}
