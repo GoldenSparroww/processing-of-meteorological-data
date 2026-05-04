@@ -3,8 +3,6 @@ import tempfile
 import pytest
 
 @pytest.mark.build
-@pytest.mark.serial
-@pytest.mark.parallel
 def test_compilation_basic(paths):
     """Verify that the project can be successfully compiled."""
     with tempfile.TemporaryDirectory() as tmp_build:
@@ -21,8 +19,6 @@ def test_compilation_basic(paths):
         assert build_res.returncode == 0, f"Compilation failed: {build_res.stderr}"
 
 @pytest.mark.build
-@pytest.mark.serial
-@pytest.mark.parallel
 def test_compilation_strict(paths):
     """Verify compilation with strict flags and no warnings."""
     with tempfile.TemporaryDirectory() as tmp_build:
