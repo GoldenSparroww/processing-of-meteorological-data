@@ -80,7 +80,7 @@ void filter_stations(std::vector<Station>& stations, bool is_parallel) {
     std::vector<Station> filtered;
     filtered.reserve(stations.size());
 
-    // TODO
+    // NOTE: Following for cycle; The parallelization didn't pay off; performance dropped by 89%
     for (size_t i = 0; i < stations.size(); ++i) {
         if (keep[i]) {
             filtered.push_back(std::move(stations[i]));
@@ -152,6 +152,7 @@ std::vector<Anomaly> detect_anomalies(const std::vector<Station>& stations, bool
     return anomalies;
 }
 
+// TODO
 std::vector<Station> hashmap_to_vector(std::unordered_map<int, Station>& map) {
     std::vector<Station> vector;
     vector.reserve(map.size());

@@ -20,6 +20,7 @@ constexpr std::string MONTHS[12] = {
 };
 std::string SVG_TEMPLATE = CZ_MAP_SVG_TEMPLATE;
 
+// TODO
 void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
     std::ofstream file(filePath, std::ios::binary);
 
@@ -64,7 +65,8 @@ void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
         }
     }
 
-    // Fill with averages, TODO
+    // TODO
+    // Fill with averages
     for (const auto& st : stations) {
         for (const auto& m_pair : st.monthly_stats) {
             int month = m_pair.first;

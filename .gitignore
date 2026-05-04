@@ -47,3 +47,7 @@ tests/.venv
 data/meteodata*/**/*
 !data/meteodata*/**/.gitkeep
 /build_test
+/.vscode
+/__pycache__
+/.pytest_cache
+/build
