@@ -4,7 +4,7 @@
 #include <limits>
 #include "../include/data_processor.h"
 
-// TODO
+// NOTE: Not efficient enough because of nested parallelism
 void precalculate_stations(Station& station) {
     for (const auto& m : station.measurements) {
         // Aggregate month -> year
@@ -71,7 +71,6 @@ void filter_stations(std::vector<Station>& stations, bool is_parallel) {
         }
 
         precalculate_stations(station);
-
         // If station passes, mark as 1 -> keep
         keep[i] = 1;
     }
@@ -152,7 +151,7 @@ std::vector<Anomaly> detect_anomalies(const std::vector<Station>& stations, bool
     return anomalies;
 }
 
-// TODO
+// NOTE: The parallelization didn't pay off; performance dropped by 106.9 %
 std::vector<Station> hashmap_to_vector(std::unordered_map<int, Station>& map) {
     std::vector<Station> vector;
     vector.reserve(map.size());

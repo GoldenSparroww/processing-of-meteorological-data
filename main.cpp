@@ -43,7 +43,7 @@ int main(const int argc, const char* argv[]) {
 
         auto end_time_ = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed_ = end_time_ - start_time;
-        std::cout << "Data loaded in:: " << elapsed_.count() << " ms\n";
+        std::cout << "Data loaded in: " << elapsed_.count() << " ms\n";
 
         // Process data
         filter_stations(stations_vector, is_parallel);

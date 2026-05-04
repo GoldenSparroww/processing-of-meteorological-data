@@ -6,6 +6,9 @@
 #include <omp.h>
 #include <algorithm>
 #include "../include/output_generator.h"
+
+#include <chrono>
+
 #include "../include/czmap_svg.h"
 
 constexpr double LON_MIN = 12.102209054269062;
@@ -20,7 +23,7 @@ constexpr std::string MONTHS[12] = {
 };
 std::string SVG_TEMPLATE = CZ_MAP_SVG_TEMPLATE;
 
-// TODO
+// NOTE: Writing to a file, have to be always sequential; we can only parallelize formating strings, but RAM usage rams up rapidly (need new buffer)
 void export_anomalies(const std::vector<Anomaly>& anomalies, const std::string& filePath) {
     std::ofstream file(filePath, std::ios::binary);
 
@@ -65,13 +68,22 @@ void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
         }
     }
 
-    // TODO
     // Fill with averages
-    for (const auto& st : stations) {
+    #pragma omp parallel for if(is_parallel) default(none) shared(stations, station_monthly_averages)
+    for (size_t i = 0; i < stations.size(); ++i) {
+        const Station& st = stations[i];
+        std::unordered_map<int, double> local_averages;
+
+        // Local calculation
         for (const auto& m_pair : st.monthly_stats) {
             int month = m_pair.first;
             double avg = m_pair.second.sum / m_pair.second.count;
-            station_monthly_averages[st.id][month] = avg;
+            local_averages[month] = avg;
+        }
+
+        #pragma omp critical
+        {
+            station_monthly_averages[st.id] = std::move(local_averages);
         }
     }
 
