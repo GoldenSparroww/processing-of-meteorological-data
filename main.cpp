@@ -78,9 +78,13 @@ int main(const int argc, const char* argv[]) {
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
         std::cout << "Processing completed. Total time: " << elapsed.count() << " ms\n";
-
-    } catch (const std::exception& e) {
-        std::cerr << "A critical error occurred: " << e.what() << '\n';
+    }
+    catch (const std::bad_alloc& e) {
+        std::cerr << "A critical error occurred. Not enough memory. (" << e.what() << ")\n";
+        return EXIT_NOT_ENOUGH_MEMORY_ERR;
+    }
+    catch (const std::exception& e) {
+        std::cerr << "A critical error occurred. " << e.what() << '\n';
         return EXIT_GENERAL_ERR;
     }
 
