@@ -40,16 +40,33 @@
 # debug information files
 *.dwo
 
+# JetBrains
 /.idea
 /cmake-build-debug*
 /cmake-build-release*
+
+# Pytest
 tests/.venv
-data/meteodata*/**/*
-!data/meteodata*/**/.gitkeep
 /build_test
-/.vscode
 /__pycache__
 /.pytest_cache
-/build
+
+# VSCode
+/.vscode
+
+# Visual Studio
 /.vs/**/*
 !/.vs/launch.vs.json
+
+# Project-specific
+data/meteodata*/**/*
+!data/meteodata*/**/.gitkeep
+/build
+
+# LaTeX
+/doc/*/*
+!/doc/*/*.tex
+!/doc/*/*.bib
+!/doc/*/*.pdf
+!/doc/*/*.cls
+!/doc/*/*.sty
