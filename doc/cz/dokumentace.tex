@@ -65,7 +65,7 @@ bottom=30mm,
 		\item \textbf{Vizualizace:} Generování dvanácti map České republiky ve formátu SVG (jedna pro každý kalendářní měsíc), kde jsou stanice barevně interpolovány na škále modrá–žlutá–červená podle průměrných teplot.
 	\end{itemize}
 	
-	Z technického hlediska je kladen důraz na efektivitu a paralelizaci výpočtů. Aplikace je implementována v jazyce C++ s využitím knihovny \textbf{OpenMP} pro distribuci zátěže mezi více jader procesoru. Program umožňuje běh v sériovém i paralelním režimu, což slouží k následné analýze výkonu, výpočtu reálného urychlení a ověření teoretických předpokladů na základě Amdahlova a Gustafsonova zákona.
+	Z technického hlediska je kladen důraz na efektivitu a paralelizaci výpočtů. Aplikace je implementována v jazyce C++ s využitím knihovny \textbf{OpenMP} pro distribuci zátěže mezi více jader procesoru. Program umožňuje běh v sériovém i paralelním režimu, což slouží k následné analýze výkonu, výpočtu reálného urychlení a ověření teoretických předpokladů na základě Amdahlova a~Gustafsonova zákona.
 	
 	Dokumentace v následujících kapitolách podrobně popisuje zvolenou architekturu, proces identifikace úseků vhodných pro paralelizaci a vyhodnocení naměřených výsledků na testovacím hardwaru.
 	
@@ -130,48 +130,44 @@ bottom=30mm,
 			\hline
 			\textbf{Označení} & \textbf{Popis} & \textbf{Pr. čas (ms)} \\ \hline
 			A & Načtení stanic z CSV souboru & 2 \\ \hline
-			B & Načtení měření jednotlivých stanic z CSV souboru & 1956 \\ \hline
-			C & Filtrace stanic na základě jejich měření & 1191 \\ \hline
-			D & Detekce anomálií stanic, které byly zachovány & 239 \\ \hline
+			B & Načtení měření jednotlivých stanic z CSV souboru & 1901 \\ \hline
+			C & Filtrace stanic na základě jejich měření & 1173 \\ \hline
+			D & Detekce anomálií stanic, které byly zachovány & 244 \\ \hline
 			E & Export CSV souboru anomálií & 21 \\ \hline
-			F & Export 12 SVG map pro každý měsíc & 122 \\ \hline
+			F & Export 12 SVG map pro každý měsíc & 127 \\ \hline
 		\end{tabular}
-		\caption{Precedenční graf: úlohy a naměřené časy}
+		\caption{úlohy a naměřené časy sériové varianty k precendenčímu garfu}
 	\end{table}
 	
 	\subsection{Kritická cesta a průměrná míra paralelismu} \label{sec:kriticka_cesta}
 	Nejprve stanovíme celkový objem práce $T$ (Total Work), který odpovídá součtu časů všech podúloh v sériovém režimu:
 	\begin{equation}
-		T = A + B + C + D + E + F = 2 + 1956 + 1191 + 239 + 21 + 122 = 3531 \text{ ms}
+		T = A + B + C + D + E + F = 2 + 1901 + 1173 + 244 + 21 + 127 = 3468 \text{ ms}
 	\end{equation}
 	
 	Dále identifikujeme délku kritické cesty $L$ (Critical Path), představující nejdelší možnou posloupnost na sobě závislých úloh. V našem případě vede tato cesta přes uzly $B \to C \to D \to F$:
 	\begin{equation}
-		L = 1956 + 1191 + 239 + 122 = 3508 \text{ ms}
+		L = 1901 + 1173 + 244 + 127 = 3445 \text{ ms}
 	\end{equation}
 	
 	Z těchto hodnot lze vypočítat průměrnou míru paralelismu $d$, která udává teoretické urychlení v případě paralelizace výhradně na úrovni úloh (Task Parallelism):
 	\begin{equation}
-		d = \frac{T}{L} = \frac{3531}{3508} \approx 1,007 \text{}
+		d = \frac{T}{L} = \frac{3468}{3445} \approx 1,007 \text{}
 	\end{equation}
 	Tato hodnota blízká 1 potvrzuje, že závislosti mezi úlohami jsou natolik silné, že souběžné spouštění celých tasků (např. pomocí \texttt{omp sections}) nepřináší významný výkonnostní zisk.
 	
 	\subsection{Identifikace vhodných míst pro paralelizaci}
-	Největší zrychlení bylo potřeba v načítání souborů. Zde se uplatnil fakt, že ačkoliv nelze paralelizovat čisté čtení z disku, následný převod do vnitřních struktur paralelizovat lze.
-	
-	Na základě analýzy výpočetní složitosti a datových závislostí byly identifikovány následující úseky vhodné pro uplatnění paralelismu:
-	
 	\subsubsection*{Fáze načítání a parsování dat}
-	Zpracování textových vstupů je rozděleno na sekvenční čtení do paměťového bufferu a následné paralelní parsování. Buffer je rozdělen na bloky (chunks), jejichž hranice jsou dynamicky zarovnány na znak konce řádku, aby nedošlo k poškození záznamů. Každé vlákno pracuje s vlastní lokální strukturou, čímž se minimalizuje potřeba synchronizace; ke sloučení dat dochází až v kritické sekci po dokončení parsování daného bloku.
+	V této fázi představuje hlavní limitaci sekvenční charakter vstupu z disku (I/O). Nicméně samotný převod textových řetězců na číselné datové typy a jejich ukládání do vnitřních struktur je operace výpočetně náročná a lze ji paralelizovat. Vhodným přístupem se jeví rozdělení paměťového bufferu na několik nezávislých bloků (chunks). Pokud budou hranice bloků dynamicky zarovnány na konec řádku, mohou jednotlivá vlákna zpracovávat své úseky zcela izolovaně. Potenciální kolize při zápisu do sdílené hashmapy lze řešit buď využitím lokálních úložišť pro každé vlákno, nebo synchronizovaným vkládáním v závěrečné fázi načítání.
 	
 	\subsubsection*{Fáze filtrace stanic}
-	Filtrace probíhá iterací přes vektor stanic, kde se pro každou stanici nezávisle ověřují podmínky na délku souvislého měření a frekvenci dat. Aby se předešlo neefektivní manipulaci s pamětí při paralelním odstraňování prvků, je využita pomocná maska (vektor příznaků), do které vlákna zapisují výsledky validace bez nutnosti vzájemné synchronizace. Samotné sestavení výsledného vektoru je pak provedeno sekvenčně, což eliminuje režii spojenou s paralelní alokací.
+	Proces filtrace je ideálním kandidátem na paralelizaci díky své povaze (tzv. embarrassingly parallel problem). Jelikož validace podmínek (kontrola 5 let souvislých měření a frekvence dat) probíhá pro každou stanici zcela nezávisle na ostatních, je možné rozdělit vektor stanic mezi dostupná vlákna. Jako efektivní strategie se zde jeví využití pomocné masky (bitsetu či vektoru příznaků), kam budou vlákna zaznamenávat výsledek analýzy. Tím se předejde nutnosti zamykání sdíleného vektoru při odstraňování prvků, což by degradovalo výkon.
 	
 	\subsubsection*{Fáze detekce anomálií}
-	Algoritmus detekce anomálií vyhodnocuje meziroční teplotní výkyvy pro každou stanici izolovaně. Vlákna v paralelním cyklu nezávisle vypočítávají lokální prahové hodnoty a identifikují skoky v datech. Vzhledem k nízké pravděpodobnosti výskytu anomálie v poměru k celkovému objemu dat je pro vkládání výsledků do sdíleného vektoru použita kritická sekce, jejíž režie je v tomto případě zanedbatelná.
+	Výpočet meziročních výkyvů vyžaduje komplexní statistické vyhodnocení (hledání extrémů a výpočet průměrů) pro každou stanici a měsíc. Vzhledem k tomu, že data jedné stanice nijak neovlivňují analýzu stanice druhé, lze výpočetní zátěž rovnoměrně rozprostřít. Paralelní cyklus může obsluhovat vnější smyčku přes seznam stanic. Protože se očekává, že počet detekovaných anomálií bude řádově nižší než celkový počet měření, bude dopad synchronizace při vkládání výsledků do finálního seznamu minimální.
 	
 	\subsubsection*{Fáze generování výstupů}
-	Při generování vizualizací je nejprve využita paralelní redukce pro zjištění globálního teplotního minima a maxima napříč všemi měřeními, což je nezbytné pro kalibraci barevné škály. Samotný export 12 SVG map je paralelizován na úrovni jednotlivých měsíců. Každé vlákno obsluhuje vlastní souborový proud, což umožňuje paralelní zápis na disk bez nutnosti synchronizace přístupu k souborům. Export do hlavního CSV souboru byl ponechán jako sekvenční operace, aby se předešlo vysoké režii spojené s koordinací zápisu do jednoho sdíleného souboru.
+	Vizualizace dat nabízí dvě úrovně paralelismu. První je nalezení globálních extrémů (min/max) pro kalibraci barevné škály, kde lze efektivně uplatnit paralelní redukci napříč všemi naměřenými hodnotami. Druhou úrovní je samotné generování 12 SVG map. Jelikož je každý měsíc reprezentován samostatným souborem, lze proces rozdělit na 12 nezávislých úloh. Každé vlákno tak může obsluhovat vlastní souborový proud (file stream), čímž se zcela eliminuje potřeba jakékoliv synchronizace při zápisu na disk.
 	
 	\section{Implementace}
 	
@@ -186,8 +182,10 @@ bottom=30mm,
 		\item \textbf{Načítání (Modul vstupu):} Data jsou parsována z CSV souborů. Pro úvodní přiřazení měření ke stanicím je využita \texttt{std::unordered\_map} pro dosažení konstantní časové složitosti vyhledávání podle ID stanice.
 		\item \textbf{Transformace:} Jakmile jsou všechna data v paměti, hash mapa je převedena na \texttt{std::vector}. Tento krok je klíčový pro následnou paralelizaci, protože souvislé uložení v paměti umožňuje optimální využití CPU cache a snadné rozdělení iteračního prostoru mezi vlákna.
 		\item \textbf{Zpracování (Modul zpracování):} Nad vektorem stanic probíhá filtrace (odstranění stanic nesplňujících kritéria) a výpočetní analýza pro detekci anomálií. Výsledkem je vektor struktur \texttt{Anomaly}.
-		\item \textbf{Výstup (Modul výstupu):} Data o anomáliích jsou sekvenčně zapsána do CSV souboru. Současně probíhá paralelní generování 12 SVG map, kde každé vlákno nezávisle konstruuje grafickou reprezentaci pro konkrétní měsíc v roce.
+		\item \textbf{Výstup (Modul výstupu):} Data o anomáliích jsou sekvenčně zapsána do CSV souboru. Nicméně byl pokus o současně paralelní generování 12 SVG map, kde každé vlákno nezávisle konstruuje grafickou reprezentaci pro konkrétní měsíc v roce. \textbf{Tento postup se ale projevil jako neefektivní}, kde kvůli zvýšené režii, došlo k necelému dvojnásobnému zhoršení výkonu. Více podorbností o tomto problému v sekci \ref{rozhodnuti:io}.
 	\end{enumerate}
+	
+	Výše uvedený text slouží jako stručný přehled architektury a logiky programu. Pro detailní pochopení implementace jednotlivých metod a datových struktur je doporučeno nahlédnout přímo do zdrojového kódu, kde jsou zejména hlavičkové soubory opatřeny podrobnými dokumentačními komentáři v anglickém jazyce.
 	
 	\subsection{Další učiněná rozhodnutí a vysvětlení implementačních detailů}
 	
@@ -199,15 +197,17 @@ bottom=30mm,
 	
 	Důležitá je také souvislost let. Pokud stanice měřila například v letech 1990–1993 (4 roky) a pak až v letech 2000–2003 (další 4 roky), má sice 8 let dat, ale neprojde, protože její nejdelší souvislý blok je pouze 4 roky dlouhý. Pro úspěšnou filtraci musí existovat alespoň jeden blok o délce minimálně 5 let.
 	
-	Dalším požadavkem je dostatečná frekvence měření. Pokud stanice měřila například v období let 2000 až 2010 (období 11 let), musí mít v součtu alespoň 1100 záznamů, aby byla považována za dostatečně aktivní. Toto pravidlo platí i v případě, kdy stanice měřila pouze v roce 2000 a posléze až v roce 2010. Situace se interpretuje jako období od 2000 do 2010 (11 let), a ačkoliv reálně probíhalo měření jen dva roky, výpočet požadované frekvence je identický a je třeba dosáhnout 1100 záznamů.
+	Dalším požadavkem je dostatečná frekvence měření. Pokud stanice měřila například v období let 2000 až 2010 (období 11 let), musí mít v součtu alespoň 1100 záznamů, aby byla považována za dostatečně aktivní. Toto pravidlo platí i v případě, kdy stanice měřila pouze v roce 2000 a posléze až v roce 2010. Situace se interpretuje jako období od 2000 do 2010 (11 let), ačkoliv reálně probíhalo měření jen dva roky, výpočet požadované frekvence je identický a je třeba dosáhnout 1100 záznamů.
 	
-	\subsubsection{Práce s I/O operacemi}
+	\subsubsection{Práce s I/O operacemi} \label{rozhodnuti:io}
 	
 	Vstupní soubory jsou otevírány v binárním režimu pomocí příznaku \texttt{std::ios::binary}. Tento krok primárně zrychluje proces čtení, jelikož operační systém nemusí provádět skrytou textovou konverzi konců řádků (např. \texttt{\textbackslash r\textbackslash n} na \texttt{\textbackslash n} ve Windows). Dává nám to absolutní kontrolu nad parsováním formátu a správným rozdělením znaků, přičemž celý soubor je načten naráz do alokovaného paměťového bufferu, abychom minimalizovali I/O operace.
 	
 	Paralelizace čtení je umožněna tím, že je soubor načten do jednoho velkého řetězce, který program následně rozdělí na bloky (chunks) odpovídající počtu dostupných vláken. Hranice každého bloku se dynamicky posunou na nejbližší znak konce řádku (\texttt{\textbackslash n}), aby se předešlo přeseknutí záznamu v polovině. Každé vlákno pak nezávisle parsuje pouze svůj vymezený paměťový blok.
 	
-	Samotný zápis výsledných anomálií do CSV souboru (\texttt{export\_anomalies}) byl ponechán jako sekvenční operace. Snaha o paralelizaci zápisu do jednoho sdíleného souboru by vyžadovala striktní synchronizaci pomocí kritických sekcí nebo zámků, jejíž režie by při předpokládaném objemu výsledků zcela eliminovala jakékoliv zrychlení. Paralelní tak zůstává pouze výpočet a formátování obsahu pro nezávislé SVG soubory.
+	Samotný zápis výsledných anomálií do CSV souboru byl ponechán jako sekvenční operace. Snaha o paralelizaci zápisu do jednoho sdíleného souboru by vyžadovala striktní synchronizaci pomocí kritických sekcí nebo zámků, jejíž režie by při předpokládaném objemu výsledků zcela eliminovala jakékoliv zrychlení.
+	
+	Podobný problém byl i u pokusu o paralelizaci generování 12 map měsíců. Zde v rámci testování, bylo zjištěno, že při pokusu generování 12 souborů současně se naměřený čas, této konkrétní sekce zvýšil z 127 ms na 210 ms. Což je zhruba dvakrát horší. Hlavním důvodem je režie souběžného otevírání více souborových proudů a dosažení fyzických limitů propustnosti diskového úložiště (I/O-bound limit). Ačkoliv každé vlákno obsluhuje vlastní souborový proud bez nutnosti synchronizace v kódu, paralelní zápis na disk způsobuje fragmentaci přístupu k médiu. Režie operačního systému na správu těchto souběžných operací a přepínání kontextu u I/O úloh v tomto případě zcela eliminovala a následně převýšila časový zisk z paralelního výpočtu dat v paměti
 	
 	Pro dosažení maximální propustnosti dat probíhá parsování číselných hodnot z bufferu zcela manuálně pomocí přímé manipulace s ASCII znaky (např. výpočtem \texttt{id = id * 10 + (buffer[pos] - '0')}), čímž se zcela vyhýbáme volání standardních funkcí jako \texttt{std::stoi} nebo \texttt{std::atof}. Tento přístup eliminuje režii spojenou s alokací pomocných řetězců, kontrolou lokalizace a vnitřní stavovou logikou standardních proudů, která je při zpracování milionů řádků kritickým úzkým hrdlem. V kombinaci s předem načteným bufferem tato nízkoúrovňová optimalizace umožňuje dosáhnout řádově vyššího výkonu, což je pro efektivní využití paralelních vláken u datově intenzivních úloh klíčové.
 	
@@ -226,7 +226,7 @@ bottom=30mm,
 	Toto tvrzení bylo navíc potvrzeno v sekci \ref{sec:kriticka_cesta}, kde průměrná míra paralelismu vyšla velmi blízko hodnotě 1. To je jednoznačný ukazatel, že úlohy jsou na sobě silně závislé a pralelizace na úrovni úloh, by mohlo být kvůli vyšší režii spíše na škodu.
 	
 	\subsubsection{Zjednodušení distribuce šablony}
-	Aby se minimalizovala chybovost a složitost nasazení aplikace u koncového uživatele (například špatně zadaná relativní cesta z příkazové řádky), byl vizuální základ slepé mapy (\texttt{<?xml version="1.0" ... <svg>}) vložen přímo do hlavičkového souboru \texttt{czmap\_svg.h} jako takzvaný surový řetězec (raw string literal \texttt{R"(...)"}). Aplikace tak nepotřebuje žádné externí zdrojové soubory a vystačí si (teoreticky) čistě se zkompilovanou binárkou.
+	Aby se minimalizovala chybovost a složitost nasazení aplikace u koncového uživatele (například špatně zadaná relativní cesta z příkazové řádky), byl vizuální základ slepé mapy \linebreak (\texttt{<?xml version="1.0" ... <svg>}) vložen přímo do hlavičkového souboru \texttt{czmap\_svg.h} jako takzvaný surový řetězec (raw string literal \texttt{R"(...)"}). Aplikace tak nepotřebuje žádné externí zdrojové soubory a vystačí si (teoreticky) čistě se zkompilovanou binárkou.
 	
 	\subsection{Naměřené hodnoty}
 	
@@ -236,47 +236,13 @@ bottom=30mm,
 		\begin{tabular}{|l|c|c|}
 			\hline
 			\textbf{Datová sada} & \textbf{Sériová verze [ms]} & \textbf{Paralelní verze [ms]} \\ \hline
-			Malá & 154 & 82 \\ \hline
-			Střední & 1 850 & 412 \\ \hline
-			Velká & 3 531 & 325 \\ \hline
+			Malá & 262 & 111 \\ \hline
+			Střední & 1 116 & 439 \\ \hline
+			Velká & 3 570 & 1 331 \\ \hline
 		\end{tabular}
-		\caption{Naměřené časy zpracování pro různé velikosti datových sad.}
+		\caption{Zpracování pro různé velikosti datových sad.}
 		\label{tab:mereni_vykonu}
 	\end{table}
-	
-	\chapter{Metriky relativní k paralelizaci}
-	
-	\section{Urychlení}
-	
-	Následující část se věnuje vyhodnocení efektivity paralelizace výhradně na velké datové sadě, kde se naplno projevuje vliv distribuce zátěže mezi jednotlivá jádra procesoru. V tabulce jsou uvedeny časy pro jednotlivé úlohy (tasky) definované v precedenčním grafu.
-	
-	\begin{table}[h]
-		\centering
-		\renewcommand{\arraystretch}{1.2}
-		\begin{tabular}{|l|c|c|}
-			\hline
-			\textbf{Úloha (Task)} & \textbf{Sériová varianta [ms]} & \textbf{Paralelní varianta [ms]} \\ \hline
-			Načtení stanic (A) & 2 & 2 \\ \hline
-			Načtení měření (B) & 1956 & 923 \\ \hline
-			Filtrace stanic (C) & 1191 & 201 \\ \hline
-			Detekce anomálií (D) & 239 & 23 \\ \hline
-			Export anomálií (E) & 21 & 20 \\ \hline
-			Export SVG map (F) & 122 & 210 \\ \hline
-			Ostatní & 39 & 71 \\ \hline
-			\hline
-			\textbf{Celkový čas} & \textbf{3570} & \textbf{1379} \\ \hline
-		\end{tabular}
-		\caption{Srovnání časů jednotlivých úloh na velké datové sadě.}
-		\label{tab:velka_data_detaily}
-	\end{table}
-	
-	Na základě celkových naměřených časů lze vypočítat reálné urychlení $S$ (speedup) aplikace podle následujícího vztahu:
-	
-	\begin{equation}
-		S = \frac{T_{\text{sériová}}}{T_{\text{paralelní}}} = \frac{3597}{1379} \approx 2,59
-	\end{equation}
-	
-	Dosažené reálné urychlení $S \approx 2,59$ na 12vláknovém procesoru ukazuje na výrazné zrychlení výpočetně náročných částí (B, C, D). Výsledek potvrzuje, že pro rozsáhlé meteorologické soubory je paralelní zpracování kritické pro dosažení akceptovatelné odezvy systému.
 	
 	\chapter{Metriky relativní k paralelizaci}
 	
@@ -291,14 +257,14 @@ bottom=30mm,
 			\hline
 			\textbf{Úloha (Task)} & \textbf{Sériová varianta [ms]} & \textbf{Paralelní varianta [ms]} \\ \hline
 			Načtení stanic (A) & 2 & 2 \\ \hline
-			Načtení měření (B) & 1956 & 923 \\ \hline
-			Filtrace stanic (C) & 1191 & 201 \\ \hline
-			Detekce anomálií (D) & 239 & 23 \\ \hline
+			Načtení měření (B) & 1 901 & 888 \\ \hline
+			Filtrace stanic (C) & 1 173 & 187 \\ \hline
+			Detekce anomálií (D) & 244 & 19 \\ \hline
 			Export anomálií (E) & 21 & 20 \\ \hline
-			Export SVG map (F) & 122 & 210 \\ \hline
-			Ostatní & 39 & 71 \\ \hline
+			Export SVG map (F) & 127 & 120 \\ \hline
+			Ostatní & 1 & 4 \\ \hline
 			\hline
-			\textbf{Celkový čas} & \textbf{3570} & \textbf{1450} \\ \hline
+			\textbf{Celkový čas} & \textbf{3 570} & \textbf{1 240} \\ \hline
 		\end{tabular}
 		\caption{Srovnání časů jednotlivých úloh na velké datové sadě.}
 		\label{tab:velka_data_detaily}
@@ -307,83 +273,95 @@ bottom=30mm,
 	Na základě celkových naměřených časů lze vypočítat reálné urychlení na základě odezvy $S_{lat}$ (speedup) aplikace. Výpočet je dán poměrem času sériového a paralelního běhu:
 	
 	\begin{equation}
-		S_{lat} = \frac{T_{\text{sériová}}}{T_{\text{paralelní}}} = \frac{3570}{1450} \approx 2,46
+		S_{lat} = \frac{T_{\text{sériová}}}{T_{\text{paralelní}}} = \frac{3570}{1240} \approx 2,88
 	\end{equation}
 	
-	Dosažené reálné urychlení $S \approx 2,46$ na 12vláknovém procesoru ukazuje na měřitelné zrychlení výpočetně náročných částí (B, C, D). Výsledek potvrzuje, že pro rozsáhlé meteorologické soubory paralelní zpracování pomáhá, nicméně celkový zisk je silně limitován jinými faktory než výpočetním výkonem (zejména I/O operacemi, jak ukazuje negativní škálování u exportu SVG).
+	Dosažené reálné urychlení $S \approx 2,88$ na 12vláknovém procesoru ukazuje na měřitelné zrychlení výpočetně náročných částí (B, C, D). Výsledek potvrzuje, že pro rozsáhlé meteorologické soubory paralelní zpracování převážně pomáhá.
 	
 	\section{Efektivita paralelizace}
 	
 	Efektivita paralelizace $\eta$ vyjadřuje míru využití dostupných hardwarových prostředků a je definována jako poměr dosaženého urychlení $S$ a počtu procesorových jader (vláken) $s$. Ideálně se tato hodnota blíží k 1 (100 \%), což by znamenalo ideální paralelizaci.
 	
 	\begin{equation}
-		\eta = \frac{S}{s} = \frac{2,46}{12} \approx 0,205 \text{ (20,5 \%)}
+		\eta = \frac{S}{s} = \frac{2,88}{12} \approx 0,24 \text{ (24 \%)}
 	\end{equation}
 	
-	\textbf{Zdůvodnění výsledků:}
-	Nízká efektivita (20,5 \%) ukazuje, že přidání dalších vláken již nepřináší odpovídající zisk. Důvodem je povaha datově orientované úlohy. Zatímco čistě výpočetní části (jako detekce anomálií, kde čas klesl z 239 ms na 23 ms) se blíží ideálnímu škálování, operace závislé na propustnosti paměti a disku (čtení velkých CSV souborů, souběžný zápis do více SVG souborů) narážejí na hardwarové limity (tzv. memory-bound a I/O-bound limity). U generování SVG navíc došlo k prodloužení času (ze 122 ms na 210 ms), pravděpodobně vlivem fragmentace zápisu na disk a režie souběžného otevírání souborů.
+	\textbf{Zhodnocení výsledků:} Nízká efektivita (24 \%) ukazuje, že přidání dalších vláken již nepřináší odpovídající zisk. Důvodem je povaha datově orientované úlohy. Zatímco čistě výpočetní části (jako detekce anomálií, kde čas klesl z 244 ms na 19 ms) se blíží ideálnímu škálování, operace závislé na propustnosti paměti a disku (čtení velkých CSV souborů, zápis do více SVG souborů) narážejí na hardwarové limity.
 	
 	\section{Amdahlův zákon}
 	
-	Amdahlův zákon předpovídá maximální teoretické urychlení při paralelizaci kódu za předpokladu neměnných hardwarových prostředků. Vychází z předpokladu, že vždy existuje určitá část kódu, kterou je nutné provádět sériově. Vzorec pro výpočet je definován jako:
+	Amdahlův zákon předpovídá maximální teoretické urychlení aplikace při paralelizaci za předpokladu, že část algoritmu zůstává striktně sériová. Na základě dodatečného měření vnitřních částí modulu načítání bylo zjištěno, že čisté čtení souborů z disku do paměti a několik navazujících inicializačních operací v úlohách \textbf{A}, \textbf{B}, \textbf{F} tvoří fixní sériovou režii, kterou nelze paralelizovat ani v rámci paralelní varianty běhu. Jedná se o primárně I/O operace. Díky tomu máme kompletní obrázek o tom, jak moc přibližně je velká fixní sériová část. Jedná se o části úlohy dříve zmíněných úloh a celou úlohu \textbf{E}, která v implementaci paralelizována není. Konkrétní časy těchto sériových částí jsou:
+	\begin{itemize}
+		\item u úlohy A (Načtení stanic): $0,2 \text{ ms}$
+		\item u úlohy B (Načtení měření): $349 \text{ ms}$
+		\item u úlohy F (Zápis 12 SVG souborů): $84 \text{ ms}$
+	\end{itemize}
 	
+	\noindent Vzorec pro výpočet teoretického maxima $S_{max}$ je:
 	\begin{equation}
 		S_{max} = \frac{1}{(1-p) + \frac{p}{s}}
 	\end{equation}
 	
-	Kde $p$ je podíl času nutný k provádění paralelní části sériově a $(1-p)$ je striktně sériová část algoritmu. Z naměřených dat (Tabulka \ref{tab:velka_data_detaily}) určíme dobu čistě sériových úloh (Načtení stanic $A$, Export anomálií $E$ a Ostatní režie). $T_{serial\_only} = 2 + 21 + 39 = 62 \text{ ms}$.
-	Podíl sériové části $a = (1-p) = \frac{62}{3570} \approx 0,0174 \text{ (1,74 \%)}$.
-	Podíl paralelizovatelné části $p = 1 - 0,0174 = 0,9826 \text{ (98,26 \%)}$.
+	Kde $p$ je podíl paralelizované části a $(1-p)$ podíl sériové části. Na základě naměřených dat pro velkou sadu (Tabulka \ref{tab:velka_data_detaily}) a započtení vnitřních sériových úseků loaderu určíme celkovou dobu sériových operací $T_{S}$ takto:
 	
-	Pro náš 12vláknový procesor je maximální teoretické urychlení:
 	\begin{equation}
-		S_{max\_12} = \frac{1}{0,0174 + \frac{0,9826}{12}} = \frac{1}{0,0174 + 0,0819} \approx 10,07
+		T_{S} = T_E + T_{A\_serial} + T_{B\_serial} + T_{F\_serial} = 21 + 0,2 + 349 + 84 = 454,2 \text{ ms}
 	\end{equation}
 	
-	\textbf{Porovnání s očekáváním a zdůvodnění:}
-	Amdahlův zákon předpovídal pro 12 vláken teoretické urychlení zhruba desetinásobné ($10,07\times$). Naměřené urychlení ($2,46\times$) je výrazně nižší. Důvodem tohoto velkého rozdílu je fakt, že Amdahlův zákon předpokládá nekonečnou propustnost paměti a nulovou režii na synchronizaci vláken a přístup k I/O. V praxi dochází k ucpání paměťové sběrnice (vlákna sice běží paralelně, ale čekají na načtení dat z RAM do cache) a uplatňuje se režie knihovny OpenMP.
+	Podíl sériové části $a = (1-p) = \frac{454,2}{3570} \approx 0,127 \text{ (12,7 \%)}$. Podíl paralelizovatelné části $p = 1 - 0,127 = 0,873 \text{ (87,3 \%)}$.  Pro náš 12vláknový procesor je teoretické urychlení:
+	
+	\begin{equation}
+		S_{max\_12} = \frac{1}{0,127 + \frac{0,873}{12}} = \frac{1}{0,127 + 0,0728} \approx 5,01
+	\end{equation}
+	
+	\textbf{Zhodnocení výsledků:} Dosazením do modelu Amdahlova zákona získáme teoretickou horní hranici urychlení ve výši $5,01\times$. Skutečnost, že reálně dosažené urychlení celého programu ($2,68\times$) je o 46,5 nižší než toto teoretické maximum, je způsobena kombinací limitované propustnosti paměťové sběrnice (memory-bound), režie knihovny OpenMP na správu vláken, nutné serializace v kritických sekcích a snížení taktovací frekvence procesoru při plném vytížení všech jader.
 	
 	\section{Gustafsonův zákon}
 	
-	Zatímco Amdahlův zákon uvažuje pevnou velikost úlohy, Gustafsonův zákon předpovídá maximální teoretické urychlení při navýšení výpočetní kapacity za předpokladu, že s růstem počtu jader se úměrně zvětšuje i objem zpracovávaných dat (tzv. škálovaný workload). Metrika je definována vztahem:
+	Gustafsonův zákon představuje alternativní pohled na urychlení paralelního výpočtu. Na rozdíl od Amdahlova zákona předpokládá, že s rostoucím počtem procesorů se úměrně zvyšuje i objem zpracovávaných dat (workload), zatímco čas provádění zůstává konstantní. Tento přístup lépe reflektuje reálné nasazení vysoce výkonných aplikací na velkých datových sadách. Vzorec pro výpočet urychlení $S$ je definován jako:
 	
 	\begin{equation}
-		S_G = (1-a)P + a
+		S = (1 - a)P + a
 	\end{equation}
 	
-	Kde $S_G$ je urychlení, $a$ je podíl sériové části kódu a $P$ je počet procesorových jader. Dosazením našich hodnot získáme:
+	Kde $a$ je podíl sériové části kódu a $P$ je počet procesorových jader. S využitím dříve stanoveného podílu sériové části $a = 0,127$ a počtu vláken $P = 12$ získáme:
 	
 	\begin{equation}
-		S_G = (1 - 0,0174) \cdot 12 + 0,0174 = 11,81
+		S = (1 - 0,127) \cdot 12 + 0,127 = 0,873 \cdot 12 + 0,127 = 10,476 + 0,127 \approx 10,60
 	\end{equation}
 	
-	\textbf{Porovnání s očekáváním a zdůvodnění:}
-	Gustafsonův zákon ukazuje mnohem optimističtější hodnotu ($11,81\times$). Toto číslo nám říká, že kdybychom vzali $12\times$ větší soubor meteorologických dat a spustili ho na našem 12vláknovém CPU, strávili bychom výpočtem stejný čas, jako by strávilo 1 vlákno na původních (menších) datech. V reálném prostředí je však toto teoretické škálování opět znehodnoceno limity propustnosti disku a paměti, které Gustafsonův vzorec přímo nereflektuje.
+	\textbf{Zhodnocení výsledků:} Gustafsonův zákon predikuje teoretické urychlení $10,60\times$. Tato hodnota je výrazně vyšší než u Amdahlova modelu ($5,01\times$), protože Gustafsonův zákon předpokládá škálování velikosti problému spolu s výpočetní kapacitou. Rozdíl mezi touto hodnotou a reálným urychlením ($2,88\times$) opět poukazuje na vliv fyzických limitů hardwaru a režie synchronizace, které nejsou v tomto lineárním modelu zahrnuty.
 	
 	\section{Karpova-Flattova metrika}
 	
-	Karpova-Flattova metrika odhaduje skutečný poměr kódu, který je reálně prováděn sériově (zahrnuje i skrytou režii paralelizace). Počítá se z experimentálně naměřeného urychlení $\psi$ (v našem případě $S = 2,46$) a počtu jader $p$:
+	Karpova-Flattova metrika slouží k odhadu reálného podílu sériového kódu v paralelním programu na základě naměřeného urychlení. Tato metrika doplňuje Amdahlův a Gustafsonův zákon tím, že kvantifikuje efektivitu paralelizace vzhledem k počtu jader.
 	
+	Odhad podílu sériové části $e$ se vypočte podle vztahu:
 	\begin{equation}
-		e = \frac{\frac{1}{\psi} - \frac{1}{p}}{1 - \frac{1}{p}} = \frac{\frac{1}{2,46} - \frac{1}{12}}{1 - \frac{1}{12}} = \frac{0,4065 - 0,0833}{0,9167} \approx 0,352
+		e = \frac{\frac{1}{\psi} - \frac{1}{p}}{1 - \frac{1}{p}}
 	\end{equation}
 	
-	\textbf{Závěr k metrice:}
-	Čím menší je hodnota $e$, tím lepší je paralelizace programu. Analýzou algoritmu jsme určili čistě sériovou část na pouhých $1,74~\%$. Karpova-Flattova metrika však odhalila, že systém se na hardwaru chová, jako by sériová část tvořila necelých $35,2~\%$. Tento obrovský nárůst jasně kvantifikuje skrytou režii (souběh na sběrnici, I/O zpoždění při zápisu map a režii vláken).
+	Kde $\psi$ je reálné urychlení programu a $p$ je počet procesorových jader. Dosazením naměřených hodnot ($\psi = 2,88$; $p = 12$) získáme:
+	
+	\begin{equation}
+		e = \frac{\frac{1}{2,88} - \frac{1}{12}}{1 - \frac{1}{12}} = \frac{0,3472 - 0,0833}{1 - 0,0833} = \frac{0,2639}{0,9167} \approx 0,288 \text{ (28,8 \%)}
+	\end{equation}
+	
+	\textbf{Zhodnocení výsledků:} Vypočtená hodnota $e \approx 0,288$ indikuje, že reálný podíl sériové složky výpočtu (včetně veškeré režie) činí necelých 29 \%. Čím nižší je hodnota této metriky, tím kvalitnější je paralelizace algoritmu. Výrazný nárůst oproti původně naměřené fixní sériové režii (12,7 \%) potvrzuje existenci významné skryté režie spojené se správou vláken a limitovanou propustností systémových prostředků při plném paralelním zatížení.
+	
 	
 	\chapter{Zhodnocení implementace a závěr}
 	
-	Navržená aplikace pro analýzu meteorologických dat úspěšně demonstruje praktické využití paralelního programování pomocí knihovny OpenMP v jazyce C++. Implementace potvrdila, že pro dosažení vysokého výkonu u datově intenzivních úloh je nezbytná kombinace vhodné paralelní strategie a nízkoúrovňových optimalizací správy dat.
-	
-	Klíčovým faktorem pro efektivitu výpočetní části bylo:
+	Navržená aplikace pro analýzu meteorologických dat úspěšně demonstruje praktické využití paralelního programování pomocí knihovny OpenMP v jazyce C++. Implementace potvrdila, že pro dosažení vysokého výkonu u datově intenzivních úloh je nezbytná kombinace promyšlené paralelní strategie a nízkoúrovňových optimalizací správy dat. Klíčovým faktorem pro celkovou efektivitu programu bylo několik strategických rozhodnutí:
 	\begin{itemize}
-		\item \textbf{Optimalizace I/O operací:} Nahrazení standardních parsovacích funkcí manuální manipulací s ASCII znaky přímo v paměťovém bufferu eliminovalo režii spojenou s alokacemi a lokalizací.
-		\item \textbf{Volba datových struktur:} Použití \texttt{std::unordered\_map} umožnilo rychlé přiřazení měření ke stanicím v čase $O(1)$ , zatímco následný převod do souvislého \texttt{std::vector} zajistil optimální využití CPU cache a efektivní distribuci iteračního prostoru mezi vlákna.
-		\item \textbf{Minimalizace synchronizace:} Využití lokálních struktur pro každé vlákno a aplikace logické masky při filtraci stanic snížily potřebu kritických sekcí na minimum.
+		\item \textbf{Optimalizace I/O operací a parsování:} Nahrazení standardních funkcí manuální manipulací s ASCII znaky přímo v načteném paměťovém bufferu eliminovalo obrovskou režii spojenou s alokacemi paměti a lokalizací.
+		\item \textbf{Transformace datových struktur:} Využití počáteční vyhledávací složitosti hash mapy a její následný převod do souvislého vektoru zajistilo optimální využití CPU cache a efektivní, bezpečné rozdělení iteračního prostoru mezi jednotlivá vlákna.
+		\item \textbf{Reflexe hardwarových limitů:} Měření jasně prokázala, že ne vše dává smysl paralelizovat. Pokus o souběžný zápis dvanácti SVG map odhalil fyzické limity propustnosti diskového úložiště. Fragmentace přístupu k médiu výkon natolik degradovala, že ponechání této části v čistě sériovém režimu bylo jediným racionálním krokem.
+		\item \textbf{Omezení přesycení vláken:} Vyloučení vnořeného paralelismu a paralelních sekcí (omp sections) zabránilo extrémnímu nárůstu režie na přepínání kontextu operačního systému (oversubscription). Toto rozhodnutí navíc plně korespondovalo s analýzou kritické cesty, kde se průměrná míra paralelismu blížila hodnotě 1.
 	\end{itemize}
 	
-	Naměřené výsledky na velké datové sadě vykázaly urychlení $S \approx 2,46$ na 12vláknovém procesoru. Ačkoliv teoretické modely (Amdahlův a Gustafsonův zákon) predikovaly vyšší potenciál zrychlení vzhledem k nízkému podílu striktně sériového kódu ($a \approx 1,74~\%$), reálný výkon byl limitován fyzickou propustností paměťové sběrnice a diskového úložiště. To se projevilo zejména u paralelního generování SVG map, kde režie souběžného zápisu na disk převýšila zisk z paralelního výpočtu.
+	Naměřené výsledky na velké datové sadě vykázaly reálné urychlení zhruba 2,88× na 12vláknovém procesoru s celkovou efektivitou paralelizace 24~\%. Ačkoliv teoretické modely (Amdahlův a Gustafsonův zákon) predikovaly výrazně vyšší potenciál zrychlení, Karpova-Flattova metrika přesně identifikovala podstatu chování systému. Reálný podíl sériové složky výpočtu, který v sobě ukrývá i skrytou režii knihovny OpenMP a úzké hrdlo paměťové sběrnice, činil téměř 29~\%. Výkon aplikace tedy narážel primárně na memory-bound a I/O-bound limity, nikoliv na nedostatek výpočetní síly samotných procesorových jader.
 	
-	Závěrem lze konstatovat, že program je stabilní a plně přenositelný mezi překladači g++ a MSVC. Implementace splnila stanovené cíle a poskytuje výkonný nástroj pro analýzu rozsáhlých datových sad, přičemž jasně identifikovala hardwarová úzká hrdla v podobě I/O operací, která u podobných typů úloh tvoří hlavní limitující faktor škálovatelnosti.
+	Závěrem lze konstatovat, že vytvořený program je plně funkční, stabilní a přenositelný mezi kompilátory. Implementace beze zbytku splnila stanovené cíle a poskytuje výkonný nástroj pro analýzu rozsáhlých datových sad. Práce tak úspěšně demonstruje nejen výhody paralelního zpracování, ale i jeho reálné limity v úlohách, kde dominuje objem a přesun dat nad jejich samotným výpočtem.
 	
 \end{document}

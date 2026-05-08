@@ -3,6 +3,8 @@
 #include <unordered_map>
 #include <vector>
 #include <omp.h>
+#include <chrono>
+#include <iostream>
 #include "../include/data_loader.h"
 #include "../include/data_types.h"
 
@@ -213,6 +215,8 @@ namespace {
 }
 
 std::unordered_map<int, Station> load_stations(const std::string& filePath, bool is_parallel) {
+    auto start_time = std::chrono::high_resolution_clock::now();
+
     std::unordered_map<int, Station> stations;
     std::string buffer = read_file_to_buffer(filePath);
 
@@ -231,6 +235,10 @@ std::unordered_map<int, Station> load_stations(const std::string& filePath, bool
         size_t actual_pos = buffer.find('\n', estimated_pos);
         chunk_boundaries[i] = (actual_pos != std::string::npos) ? actual_pos + 1 : buffer.size();
     }
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
+    std::cout << "\t- stations (serial part I/O): " << elapsed.count() << " ms\n";
 
     #pragma omp parallel if(is_parallel) num_threads(num_threads) default(none) shared(buffer, chunk_boundaries, stations)
     {
@@ -259,6 +267,8 @@ std::unordered_map<int, Station> load_stations(const std::string& filePath, bool
 }
 
 void load_measurements(const std::string& filePath, std::unordered_map<int, Station>& stations, bool is_parallel) {
+    auto start_time = std::chrono::high_resolution_clock::now();
+
     std::string buffer = read_file_to_buffer(filePath);
 
     // Set thread count based on is_parallel
@@ -276,6 +286,10 @@ void load_measurements(const std::string& filePath, std::unordered_map<int, Stat
         size_t actual_pos = buffer.find('\n', estimated_pos);
         chunk_boundaries[i] = (actual_pos != std::string::npos) ? actual_pos + 1 : buffer.size();
     }
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
+    std::cout << "\t- measurements (serial part I/O): " << elapsed.count() << " ms\n";
 
     #pragma omp parallel if(is_parallel) num_threads(num_threads) default(none) shared(buffer, chunk_boundaries, stations)
     {

@@ -90,11 +90,10 @@ void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
     double temp_range = global_max - global_min;
     if (temp_range == 0) temp_range = 1; // zero division secure
 
+    auto start_time = std::chrono::high_resolution_clock::now();
+
     //std::ostream& out_stream = std::cout;
     // Generate maps for each month
-    #pragma omp parallel for if(is_parallel) default(none) \
-    shared(stations, station_monthly_averages, global_min, temp_range, \
-    LON_MIN, LON_MAX, LAT_MAX, LAT_MIN, SVG_WIDTH, SVG_HEIGHT, MONTHS, SVG_TEMPLATE)
     for (int month = 1; month <= 12; ++month) {
         std::string filename = MONTHS[month - 1] + ".svg";
         std::ofstream out_file(filename, std::ios::binary);
@@ -135,4 +134,8 @@ void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
 
         out_file << "</svg>";
     }
+
+    auto end_time = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
+    std::cout << "\t- SVG 12x export (serial part I/O): " << elapsed.count() << " ms\n";
 }
