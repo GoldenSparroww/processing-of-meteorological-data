@@ -7,7 +7,12 @@
 #include "../include/data_types.h"
 
 namespace {
-    // Read file into std::string buffer
+    /**
+     * @brief Reads the entire content of a file into a string buffer.
+     * * @param filePath Path to the file to be read.
+     * @return std::string A string containing the entire file content.
+     * @throws std::runtime_error If the file cannot be opened or read.
+     */
     inline std::string read_file_to_buffer(const std::string& filePath) {
         std::ifstream file(filePath, std::ios::binary | std::ios::ate);
         if (!file.is_open()) {
@@ -25,7 +30,15 @@ namespace {
         return buffer;
     }
 
-    // Parse station record from buffer
+    /**
+     * @brief Parses a single station record from a CSV string buffer.
+     * * Extracts ID, name, latitude, and longitude. Advances the `current_pos`
+     * to the beginning of the next line.
+     * * @param buffer The string buffer containing the CSV data.
+     * @param current_pos Reference to the current parsing position in the buffer (updated during parsing).
+     * @param end_idx The maximum index in the buffer to parse up to (chunk boundary).
+     * @return Station The parsed station object.
+     */
     inline Station parse_station_line(const std::string& buffer, size_t& current_pos, size_t end_idx) {
         Station station;
 
@@ -112,7 +125,16 @@ namespace {
         return station;
     }
 
-    // Parse measurement record from buffer
+    /**
+     * @brief Parses a single measurement record from a CSV string buffer.
+     * * Extracts station ID, year, month, day, and temperature value. The ordinal
+     * number is skipped. Advances the `current_pos` to the beginning of the next line.
+     * * @param buffer The string buffer containing the CSV data.
+     * @param current_pos Reference to the current parsing position in the buffer (updated during parsing).
+     * @param end_idx The maximum index in the buffer to parse up to (chunk boundary).
+     * @param[out] parsed_station_id Reference where the parsed station ID will be stored.
+     * @param[out] m Reference to the Measurement struct to be populated with parsed data.
+     */
     inline void parse_measurement_line(const std::string& buffer, size_t& current_pos, size_t end_idx, int& parsed_station_id, Measurement& m) {
         // 1. Station ID
         parsed_station_id = 0;

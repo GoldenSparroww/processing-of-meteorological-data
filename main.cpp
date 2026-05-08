@@ -6,6 +6,22 @@
 #include "include/output_generator.h"
 #include "include/data_types.h"
 
+class Timer {
+    std::string label;
+    std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
+
+public:
+    Timer(std::string l) : label(std::move(l)), start_time(std::chrono::high_resolution_clock::now()) {
+        std::cout << "Starting " << label << "...\n";
+    }
+
+    ~Timer() {
+        auto end_time = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
+        std::cout << label << " finished in: " << elapsed.count() << " ms\n";
+    }
+};
+
 int main(const int argc, const char* argv[]) {
     // Check arguments
     if (argc != 4) {
@@ -35,22 +51,38 @@ int main(const int argc, const char* argv[]) {
         is_parallel ? std::cout << "Starting parallel version...\n" : std::cout << "Starting serial version...\n";
 
         // Data loading
-        std::unordered_map<int, Station> stations_map = load_stations(fileStations, is_parallel);
-        load_measurements(fileMeasurements, stations_map, is_parallel);
+        std::unordered_map<int, Station> stations_map;
+        {
+            Timer timer("stations");
+            stations_map = load_stations(fileStations, is_parallel);
+        }
+        {
+            Timer timer("measurements");
+            load_measurements(fileMeasurements, stations_map, is_parallel);
+        }
 
         auto stations_vector = hashmap_to_vector(stations_map);
         stations_map.clear();
 
-        auto end_time_ = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<double, std::milli> elapsed_ = end_time_ - start_time;
-        std::cout << "Data loaded in: " << elapsed_.count() << " ms\n";
-
         // Process data
-        filter_stations(stations_vector, is_parallel);
-        std::cout << stations_vector.size() << "\n";
-        auto anomalies = detect_anomalies(stations_vector, is_parallel);
-        export_anomalies(anomalies, OUTPUT_CSV_NAME);
-        generate_maps(stations_vector, is_parallel);
+        {
+            Timer timer("filter");
+            filter_stations(stations_vector, is_parallel);
+
+        }
+        std::vector<Anomaly> anomalies;
+        {
+            Timer timer("anomalies");
+            anomalies = detect_anomalies(stations_vector, is_parallel);
+        }
+        {
+            Timer timer("export anomalies");
+            export_anomalies(anomalies, OUTPUT_CSV_NAME);
+        }
+        {
+            Timer timer("maps");
+            generate_maps(stations_vector, is_parallel);
+        }
 
         // Stop stopwatch and calculate duration
         auto end_time = std::chrono::high_resolution_clock::now();

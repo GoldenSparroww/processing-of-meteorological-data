@@ -3,6 +3,11 @@
 
 #include <string>
 
+/**
+ * @brief A constant string containing the raw XML/SVG data for the map of the Czech Republic.
+ * * This template is used as the foundational layer upon which meteorological stations
+ * and their temperature-based color points are drawn for each month.
+ */
 const std::string CZ_MAP_SVG_TEMPLATE = R"(<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    xmlns:dc="http://purl.org/dc/elements/1.1/"
