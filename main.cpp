@@ -6,6 +6,12 @@
 #include "include/output_generator.h"
 #include "include/data_types.h"
 
+/**
+ * @brief Simple RAII timer class used for tracking execution time of code blocks.
+ * * When a Timer object is created, it records the start time and prints a start message.
+ * When it goes out of scope (is destroyed), it calculates the elapsed time and
+ * prints the total duration in milliseconds.
+ */
 class Timer {
     std::string label;
     std::chrono::time_point<std::chrono::high_resolution_clock> start_time;
@@ -22,6 +28,23 @@ public:
     }
 };
 
+/**
+ * @brief Main entry point of the application.
+ * * This function coordinates the entire meteorological data processing pipeline:
+ * 1. Validates command-line arguments.
+ * 2. Loads stations and their temperature measurements from CSV files.
+ * 3. Filters stations based on data continuity and frequency.
+ * 4. Detects inter-annual temperature anomalies.
+ * 5. Exports results to a CSV file and generates monthly SVG maps.
+ * * Execution can be switched between serial and parallel modes (using OpenMP)
+ * via a command-line flag.
+ * * @param argc The count of command-line arguments.
+ * @param argv The array of command-line arguments:
+ * - argv[1]: Path to the stations CSV file.
+ * - argv[2]: Path to the measurements CSV file.
+ * - argv[3]: Mode flag (--serial or --parallel).
+ * @return int Returns EXIT_OK (0) on success, or a specific error code from the ErrorCode enum.
+ */
 int main(const int argc, const char* argv[]) {
     // Check arguments
     if (argc != 4) {
