@@ -12,13 +12,13 @@ class Timer {
 
 public:
     Timer(std::string l) : label(std::move(l)), start_time(std::chrono::high_resolution_clock::now()) {
-        std::cout << "Starting " << label << "...\n";
+        std::cout << "Starting " << label << "...";
     }
 
     ~Timer() {
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double, std::milli> elapsed = end_time - start_time;
-        std::cout << label << " finished in: " << elapsed.count() << " ms\n";
+        std::cout << " " << elapsed.count() << " ms\n";
     }
 };
 

@@ -87,9 +87,6 @@ void generate_maps(const std::vector<Station>& stations, bool is_parallel) {
         }
     }
 
-    std::cout << "Global min: " << global_min << '\n';
-    std::cout << "Global max: " << global_max << '\n';
-
     double temp_range = global_max - global_min;
     if (temp_range == 0) temp_range = 1; // zero division secure
 
