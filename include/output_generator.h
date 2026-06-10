@@ -5,7 +5,7 @@
 #include <string>
 #include "data_types.h"
 
-constexpr std::string OUTPUT_CSV_NAME = "vykyvy.csv";
+constexpr std::string OUTPUT_CSV_NAME = "anomalies.csv";
 
 /**
  * @brief Exports the detected temperature anomalies to a CSV file.

@@ -1,0 +1,513 @@
+id;name;latitude;longitude
+1;Bojkovice;49.0372;17.8058
+2;Brumov-Bylnice, Bylnice;49.0711;18.0075
+3;Budětsko;49.5861;16.9261
+4;Bystřice pod Hostýnem;49.3956;17.6672
+5;Bzenec;48.9739;17.27
+6;Horní Moštěnice;49.4153;17.4505
+7;Hodonín;48.8575;17.1317
+8;Holešov;49.3186;17.5733
+9;Ivanovice na Hané;49.3147;17.0958
+10;Luhačovice, Kladná-Žilín;49.0842;17.7919
+11;Kojetín;49.3525;17.3036
+12;Konice;49.5922;16.8922
+13;Kroměříž;49.2997;17.3781
+14;Luhačovice;49.1017;17.765
+15;Plumlov;49.4675;17.0161
+16;Prostějov, ?;49.4642;17.1133
+17;Protivanov;49.4778;16.8311
+18;Štítná nad Vláří - Popov, Štítná nad Vláří;49.0728;17.9711
+19;Uherské Hradiště;49.0822;17.4403
+20;Strání;48.9028;17.7011
+21;Strážnice;48.8992;17.3381
+22;Vizovice;49.2231;17.8439
+23;Zlín;49.2278;17.6942
+24;Boskovice;49.4889;16.6717
+25;Božice;48.8375;16.2903
+26;Brno, Pisárky;49.1958;16.5678
+27;Brankovice;49.1553;17.1331
+28;Brod nad Dyjí;48.8733;16.5358
+29;Brno, Tuřany;49.1597;16.6956
+30;Bukovany;49.0422;17.1042
+31;Brno, Veveří;49.2067;16.5981
+32;Bystřice nad Pernštejnem;49.515;16.25
+33;Brno, Žabovřesky;49.2165;16.5677
+34;Čejkovice;48.9045;16.9465
+35;Chvalovice;48.7872;16.0836
+36;Úsuší, Čížky;49.3292;16.3653
+37;Dukovany;49.0958;16.1344
+38;Dyjákovice;48.7733;16.2992
+39;Tišnov, Hájek;49.3731;16.4725
+40;Hevlín;48.7506;16.3719
+41;Hubenov;49.3903;15.49
+42;Ivančice;49.1019;16.3789
+43;Jihlava;49.3881;15.5408
+44;Kostelní Myslová;49.1592;15.4389
+45;Kobylí;48.9394;16.8814
+46;Kuchařovice;48.8825;16.0864
+47;Kuřim;49.3014;16.5397
+48;Lednice;48.7964;16.7992
+49;Lhota Rapotina;49.4677;16.6236
+50;Lysice;49.4531;16.5322
+51;Moravské Budějovice;49.0494;15.8083
+52;Mikulov;48.8014;16.6483
+53;Náměšť nad Oslavou;49.2103;16.1436
+54;Nedvězí;49.6344;16.3097
+55;Nemochovice;49.1806;17.1358
+56;Olešnice;49.5619;16.4236
+57;Pohořelice;48.9775;16.5167
+58;Polička;49.7131;16.2681
+59;Puklice;49.3641;15.651
+60;Sedlec;49.1708;16.1206
+61;Střílky;49.1442;17.2117
+62;Tišnov;49.3506;16.4231
+63;Třebíč, Stařečka;49.2111;15.8556
+64;Troubsko;49.1743;16.5083
+65;Vatín;49.5183;15.9708
+66;Velké Meziříčí;49.3528;16.0086
+67;Velké Pavlovice;48.9086;16.8244
+68;Ždánice;49.0647;17.0269
+69;Žďár nad Sázavou;49.5628;15.9436
+70;Znojmo;48.8561;16.05
+71;Borová Lada, Nový Svět;48.9911;13.6683
+72;Blatná;49.4167;13.8833
+73;Černá v Pošumaví;48.7333;14.1167
+74;Chelčice;49.1167;14.1667
+75;Churáňov;49.0683;13.6131
+76;Horská Kvilda;49.0512;13.5709
+77;Horní Planá, Hůrka;48.7496;14.0754
+78;Hrádek;49.2667;13.5
+79;Husinec;49.0397;13.9928
+80;Kestřany;49.2664;14.0725
+81;Kubova Huť;48.9817;13.7747
+82;Kocelovice;49.465;13.8311
+83;Ktiš, Tisovka;48.9033;14.1075
+84;Lenora;48.9231;13.8036
+85;Lhenice;48.9922;14.1494
+86;Markov;48.9031;14.0622
+87;Nová Pec;48.7847;13.9589
+88;České Budějovice, Planá;48.9469;14.4292
+89;Protivín;49.1983;14.2128
+90;Rožmitál pod Třemšínem;49.6039;13.8656
+91;Sedlice;49.3764;13.945
+92;Smědeč;48.9367;14.155
+93;Solenice;49.6119;14.1803
+94;Strakonice;49.2667;13.9
+95;Sušice;49.2308;13.5264
+96;Temelín;49.1969;14.3422
+97;Vimperk;49.0606;13.7825
+98;Vlkonice;49.3022;13.5897
+99;Vodňany;49.15;14.1667
+100;Volary;48.9088;13.8866
+101;Vráž;49.3833;14.1333
+102;Vševily;49.5667;13.8833
+103;Bechyně;49.2667;14.5
+104;Borkovice;49.2117;14.6539
+105;Byňov;48.8156;14.8003
+106;České Budějovice,  vodárna;48.9747;14.4694
+107;Černovice;49.3728;14.9633
+108;Chlum u Třeboně;48.9583;14.9333
+109;Český  Krumlov;48.8007;14.3175
+110;Hosín;49.0422;14.4944
+111;Horní Stropnice, Hojná Voda;48.7305;14.7272
+112;Jindřichův Hradec;49.15;15
+113;Klenovice;49.5825;14.2042
+114;Křemže;48.9044;14.3058
+115;Nadějkov, Větrov;49.5167;14.4667
+116;Olešná;49.3433;14.3131
+117;Počátky;49.265;15.2644
+118;Římov;48.8494;14.4889
+119;Rudolfov, Jivno;49.0008;14.5644
+120;Tábor;49.4136;14.6692
+121;Třeboň;49.0089;14.7725
+122;Vyšší Brod;48.6175;14.3144
+123;Bučina, u Kvildy;48.9673;13.5927
+124;Hliniště;48.9094;13.7442
+125;Plechý;48.7714;13.8592
+126;Rokytská slať;49.0158;13.4194
+127;Červený Kostelec;50.4667;16.0833
+128;Česká Skalice, Rozkoš;50.3631;16.0611
+129;Dvůr Králové nad Labem;50.4167;15.9333
+130;Janské Lázně;50.6333;15.7833
+131;Jaroměř;50.35;15.9167
+132;Labská bouda;50.77;15.5453
+133;Luční bouda;50.7353;15.6979
+134;Pec pod Sněžkou;50.7;15.7333
+135;Rýchorská bouda;50.6603;15.8497
+136;Špindlerův Mlýn, přehrada Labská;50.7167;15.5833
+137;Teplice nad Metují Zdoňov;50.6411;16.1474
+138;Trutnov;50.55;15.9
+139;Úpice, hvězdárna;50.5064;16.0117
+140;Velichovky;50.3569;15.8325
+141;Vrbatová bouda, Vítkovice;50.75;15.55
+142;Vrchlabí;50.6242;15.6408
+143;Žacléř;50.661;15.9068
+144;Borohrádek;50.0923;16.1
+145;Deštné v Orlic. horách;50.3033;16.3528
+146;Doudleby nad Orlicí;50.1167;16.2667
+147;Jablonné nad Orlicí;50.0333;16.6
+148;Králíky;50.0833;16.7833
+149;Luisino údolí, Deštné v Orlických horách;50.287;16.3884
+150;Nekoř;50.0744;16.5619
+151;Orlické Záhoří - vodárna;50.2715;16.4789
+152;Polom, Sedloňov;50.3501;16.3221
+153;Rokytnice v Orlic.horách;50.165;16.4567
+154;Rychnov nad Kněžnou;50.1725;16.2683
+155;Ústí nad Orlicí;49.9667;16.3833
+156;Žamberk;50.0694;16.455
+157;Broumov;50.6042;16.3333
+158;Čáslav, Nové město;49.9006;15.3933
+159;Chrudim;49.95;15.7833
+160;Chotěboř;49.7167;15.6667
+161;Chotusice, letiště;49.941;15.3865
+162;Dobřenice;50.1481;15.6375
+163;Gajer, Janov;49.8211;16.41
+164;Holovousy;50.3747;15.5772
+165;Pouchov, Hradec Králové;50.2456;15.8433
+166;Hradec Králové, Nový Hradec Králové;50.1776;15.8385
+167;Hrušová;49.9167;16.1952
+168;Jičín, Soudná;50.4333;15.3667
+169;Kolín;50.0333;15.2333
+170;Krásné;49.8219;15.7383
+171;Lázně Bělohrad;50.43;15.5888
+172;Libice nad Doubravou;49.7442;15.7047
+173;Litomyšl;49.865;16.3172
+174;Městec Králové;50.2;15.3
+175;Mokošín;50.0164;15.5667
+176;Nový Bydžov;50.2417;15.5081
+177;Pardubice, letiště;50.0161;15.7403
+178;Poběžovice u Holic;50.0925;16.0064
+179;Poděbrady;50.1453;15.1128
+180;Přelouč;50.0333;15.55
+181;Radovesnice II.;50.1067;15.3686
+182;Seč;49.8447;15.6479
+183;Skuteč;49.8458;15.9922
+184;Slatiny, Milíčeves;50.3812;15.3998
+185;Hradec Králové, Svobodné Dvory;50.2195;15.801
+186;Svratouch;49.7351;16.0341
+187;Zaječice;49.9;15.8833
+188;Zbýšov, Dobrovítov;49.787;15.3304
+189;Sněžka, Poštovna;50.7358;15.7403
+190;Domažlice;49.4447;12.9225
+191;Hojsova Stráž;49.2089;13.1989
+192;Klatovy;49.3922;13.3017
+193;Libkov;49.3564;13.1383
+194;Mutěnín;49.5444;12.7481
+195;Nepomuk;49.4842;13.5833
+196;Plzeň, Mikulka;49.765;13.3786
+197;Plzeň, Bolevec;49.7872;13.3878
+198;Plzeň, Dobřany;49.6764;13.2694
+199;Plzeň, město;49.7342;13.3761
+200;Špičák;49.1771;13.2311
+201;Staňkov;49.5531;13.0689
+202;Dyleň;49.9683;12.5044
+203;Heřmanov;50.1485;13.5713
+204;Kněževes;50.1446;13.6346
+205;Konstantinovy Lázně;49.885;12.9778
+206;Kralovice;49.9889;13.4942
+207;Krásné Údolí;50.0719;12.9253
+208;Mariánské Lázně, Skláře;49.9272;12.7183
+209;Mariánské Lázně;49.9703;12.7128
+210;Mariánské Lázně, vodárna;49.9903;12.6958
+211;Přimda;49.6694;12.6794
+212;Stříbro;49.7545;12.9975
+213;Tachov;49.7992;12.6242
+214;Toužim;50.0586;12.9858
+215;Zbiroh, Švabín;49.8549;13.7523
+216;Aš;50.2208;12.1797
+217;Cheb;50.0739;12.3889
+218;Františkovy Lázně;50.1167;12.3514
+219;Klínovec;50.3936;12.9722
+220;Královské Poříčí;50.1972;12.6361
+221;Karlovy Vary, Olšová Vrata;50.2019;12.9131
+222;Karlovy Vary;50.2279;12.877
+223;Kynžvart;50.0069;12.6347
+224;Nejdek;50.3169;12.7514
+225;Potůčky;50.4147;12.7425
+226;Přebuz;50.3636;12.6224
+227;Šindelová, Obora;50.3183;12.5972
+228;Sokolov;50.177;12.6393
+229;Vřesová;50.2417;12.7133
+230;Bělotín;49.5875;17.8028
+231;Bílý Kříž;49.5028;18.5389
+232;Bílá, Konečná;49.4536;18.5253
+233;Bílá, Bumbálka;49.4;18.4125
+234;Bílovec;49.7589;18.0256
+235;Bílá Voda;50.4333;16.9
+236;Bohdanovice;49.9014;17.6425
+237;Bohumín, Starý Bohumín;49.9203;18.3333
+238;Červená;49.7772;17.5419
+239;Chuchelná;49.9917;18.1198
+240;Frýdek-Místek, Místek;49.6667;18.3158
+241;Frenštát pod Radhoštěm;49.55;18.2194
+242;Fryčovice;49.6667;18.2167
+243;Frýdek-Místek, Frýdek;49.6917;18.3542
+244;Staré Hamry, Gruň;49.4872;18.4844
+245;Slezská Harta;49.8881;17.5747
+246;Hodslavice;49.5378;18.0256
+247;Horní Lomná, Salajka;49.5325;18.6417
+248;Hukvaldy;49.6261;18.2239
+249;Hladké Životice;49.6906;17.9494
+250;Jablunkov;49.5731;18.7539
+251;Javorník, Travná;50.375;16.9422
+252;Třinec, Oldřichovice, Javorový ;49.6283;18.6272
+253;Jeseník;50.2275;17.1875
+254;Jindřichov;50.2508;17.5472
+255;Karlovice;50.1089;17.4433
+256;Karviná, Staré Město;49.8689;18.5158
+257;Karlova Studánka;50.0742;17.31
+258;Klimkovice;49.7806;18.1375
+259;Krnov;50.0811;17.7144
+260;Kružberk;49.8244;17.6639
+261;Lučina;49.7308;18.4425
+262;Lysá hora;49.5461;18.4478
+263;Melč;49.8467;17.7681
+264;Frýdek-Místek, Místek;49.675;18.3389
+265;Mořkov;49.5414;18.0583
+266;Mošnov;49.6942;18.12
+267;Dolní Lutyně, Nerad;49.9147;18.4167
+268;Nový Jičín;49.5917;18.025
+269;Nýdek, Filipka;49.6167;18.7886
+270;Odry;49.6639;17.8286
+271;Opava;49.9306;17.8783
+272;Ostravice, Hamrovice;49.5556;18.3806
+273;Ostrava, Slezská Ostrava;49.845;18.3176
+274;Osoblaha;50.2722;17.7156
+275;Ostrava, Zábřeh;49.8056;18.2403
+276;Palkovice, Podhůří;49.6375;18.3056
+277;Paskov;49.7328;18.3
+278;Ostrava, Poruba;49.8253;18.1594
+279;Praděd;50.0828;17.23
+280;Příbor;49.6333;18.1333
+281;Ostružná, Ramzová;50.2;17.0667
+282;Zlaté Hory, Rejvíz;50.2297;17.305
+283;Ropice;49.6931;18.615
+284;Rýmařov;49.9353;17.2797
+285;Rýmařov, Harrachov;49.9544;17.2864
+286;Šerák;50.1875;17.1086
+287;Stonava, Hořany;49.8092;18.5383
+288;Světlá Hora;50.0331;17.4011
+289;Těškovice;49.8167;18.0167
+290;Třinec;49.6861;18.65
+291;Trojanovice, Pod Javorníkem;49.5231;18.1779
+292;Tyra;49.6061;18.6333
+293;Uhelná, Nové Vilémovice;50.3321;16.9847
+294;Vidnava, Fojtství;50.37;17.1869
+295;Krásná, Visalaje;49.5236;18.5333
+296;Vítkov;49.7756;17.7554
+297;Město Albrechtice, Žáry;50.1517;17.5553
+298;Zlaté Hory;50.2667;17.3978
+299;Bouzov;49.7051;16.8925
+300;Dlouhé Stráně, Kouty nad Desnou;50.0775;17.1617
+301;Dubicko;49.8247;16.9656
+302;Hanušovice, Horní Hanušovice;50.0917;16.9472
+303;Luká, Ješov;49.6698;16.9556
+304;Jevíčko;49.63;16.7197
+305;Kozlov;49.6017;17.5327
+306;Lanškroun;49.9153;16.6067
+307;Leština;49.8681;16.9278
+308;Velké Losiny;50.0356;17.0439
+309;Luká;49.6522;16.9533
+310;Moravský Beroun;49.7944;17.4444
+311;Medlov, Hlivice;49.7824;17.038
+312;Mohelnice;49.7778;16.9111
+313;Olomouc, Klášterní Hradisko;49.6089;17.2642
+314;Olomouc, Neředín;49.5944;17.2167
+315;Olomouc, Slavonín;49.5758;17.2367
+316;Oskava, Bedřichov;49.9269;17.1561
+317;Staré Město pod Sněžníkem, Paprsek;50.2094;16.9939
+318;Paseka;49.8078;17.2311
+319;Malá Morava, Sklené;50.1214;16.8428
+320;Dolní Morava, Slaměnka;50.151;16.8328
+321;Dolní Studénky, Třemešek;49.9454;17
+322;Šternberk;49.725;17.2972
+323;Štíty;49.9566;16.7643
+324;Staré Město pod Sněžníkem, Kunčice;50.1933;16.9433
+325;Staré Město;49.7947;16.6792
+326;Šumperk, Temenice;49.9728;16.9664
+327;Tovačov;49.4278;17.2889
+328;Třebařov;49.8158;16.6969
+329;Tršice;49.5383;17.4246
+330;Uničov;49.7764;17.1172
+331;Zábřeh;49.8833;16.8833
+332;Zadní Arnoštov;49.6583;16.6667
+333;Horní Bečva;49.4231;18.3158
+334;Velké Karlovice, Benešky;49.397;18.2944
+335;Bystřička;49.4242;18.0208
+336;Halenkov;49.3211;18.145
+337;Hošťálková;49.3569;17.8708
+338;Hranice;49.5458;17.7417
+339;Huslenky, Kychová;49.2792;18.1639
+340;Kateřinice, Ojičná;49.4008;17.8733
+341;Kunovice;49.4444;17.8111
+342;Lipník nad Bečvou;49.5253;17.5742
+343;Hošťálková, Maruška;49.3653;17.8286
+344;Pavlovice u Přerova;49.4722;17.5583
+345;Potštát, Boškov;49.6238;17.6142
+346;Přerov;49.4639;17.4572
+347;Rajnochovice;49.4039;17.8167
+348;Rožnov pod Radhoštěm;49.4611;18.1361
+349;Střítěž nad Ludinou;49.6069;17.7403
+350;Valašská Bystřice;49.4153;18.1122
+351;Valašské Meziříčí;49.4636;17.9742
+352;Valašská Senice;49.2397;18.1267
+353;Velké Karlovice, Miloňov;49.3667;18.31
+354;Veselíčko;49.5333;17.5167
+355;Vsetín;49.3444;17.9961
+356;Zubří;49.4644;18.0839
+357;Bělá pod Pradědem, Adolfovice, vodárna;50.1906;17.2267
+358;Bílá, lesnické učiliště;49.4432;18.4559
+359;Bumbálka;49.3981;18.4131
+360;Bystřička, přehrada;49.4215;18.0202
+361;Čeladná, BRC;49.5373;18.3052
+362;Čeladná, Podolánky;49.4733;18.3598
+363;Červenohorské sedlo;50.125;17.1542
+364;Ružďka, Dušná, Putýrka;49.3786;18.0378
+365;Hrčava;49.5211;18.8342
+366;Hladké Životice;49.6903;17.9514
+367;Karlova Studánka;50.0731;17.3058
+368;Králický Sněžník;50.2053;16.8503
+369;Horní Bečva, Kudlačena;49.4319;18.3256
+370;Maruška;49.3661;17.8294
+371;Morávka, Lúčka;49.5326;18.5498
+372;Mořkov;49.5414;18.0583
+373;Mosty u Jablunkova, chata Skalka;49.5169;18.7159
+374;Nýdek, Hluchová-Kolibiska;49.6158;18.8089
+375;Ostrava, Bělský les;49.7876;18.2444
+376;Ostrava, Dolní oblast Vítkovic;49.8199;18.2828
+377;Ostrava, Hošťálkovice;49.8674;18.2116
+378;Ostrava, Hrabová;49.7712;18.2836
+379;Olšany u Šumperka;49.9639;16.8625
+380;Ostrava, Mariánské Hory;49.8335;18.2578
+381;Ostrava, Martinov;49.8558;18.1772
+382;Ostrava, Moravská Ostrava;49.8485;18.2906
+383;Ostrava, Nová Ves;49.8245;18.2366
+384;Ostrava, Petřkovice;49.8696;18.2574
+385;Ostrava, Polanka nad Odrou;49.7789;18.1716
+386;Ostrava, Radvanice;49.8189;18.3262
+387;Ostravice;49.526;18.4006
+388;Ostrava, Třebovice;49.8323;18.1936
+389;Ostrava, Vítkovice, Penzion;49.8109;18.2474
+390;Ostrava, Vítkovice, TEMEX;49.8109;18.272
+391;Ostrava, Výškovice;49.7732;18.2237
+392;Ostrava, Zábřeh;49.7972;18.2694
+393;Palkovice, Hůrky;49.6376;18.2741
+394;Paseka;49.7967;17.2308
+395;Ostrava, Poruba;49.8253;18.1594
+396;Prašivá;49.6367;18.4846
+397;Rejvíz;50.2295;17.2983
+398;Ropička, totalizátor;49.6185;18.559
+399;Rýmařov, město;49.9314;17.2958
+400;Šenov, Lapačka;49.7706;18.3803
+401;Staré Hamry, Červík;49.4544;18.3983
+402;Soláň, HS Beskydy;49.3908;18.2488
+403;Trojanovice, Pindula;49.5012;18.187
+404;Valašská Bystřice, Búřov;49.4093;18.0997
+405;Valašská Senice;49.2397;18.1267
+406;Vítkov;49.7773;17.7572
+407;Vsetín, MŠ Kobzáňova;49.3395;17.9964
+408;Zděchov, totalizátor;49.2467;18.0722
+409;Beroun;49.9558;14.0714
+410;Dobřichovice;49.9333;14.2758
+411;Jíloviště;49.9233;14.3319
+412;Kamýk nad Vltavou;49.6492;14.2481
+413;Kladno,  Kročehlavy;50.1333;14.1083
+414;Kralupy nad Vltavou;50.2422;14.2908
+415;Lány;50.1244;13.9528
+416;Hostomice;49.8264;14.0433
+417;Praha, Karlov;50.0675;14.4186
+418;Praha, Kbely;50.1233;14.5381
+419;Praha, Klementinum;50.0867;14.4164
+420;Praha, Komořany;49.9883;14.4072
+421;Praha, Libuš;50.0083;14.4481
+422;Příbram;49.7083;13.9833
+423;Praha, Ruzyně;50.0942;14.2817
+424;Praha, Střešovice;50.0904;14.3855
+425;Praha, Uhříněves;50.0322;14.6036
+426;Praha, Vinohrady;50.0667;14.4667
+427;Benecko;50.6638;15.5582
+428;Brandýs nad Labem-St.B;50.1897;14.6606
+429;Český Brod, Liblice;50.076;14.8661
+430;Český Dub;50.6639;14.9989
+431;Dolní Bousov;50.4378;15.1417
+432;Desná, Souš;50.7897;15.3192
+433;Dvoračky;50.7482;15.5145
+434;Harrachov;50.7749;15.4275
+435;Holenice;50.5333;15.3
+436;Katusice;50.4458;14.7797
+437;Kořenov, Jizerka;50.8175;15.3494
+438;Lysá nad Labem;50.2;14.85
+439;Vítkovice, Horní Mísečky;50.7356;15.5711
+440;Mrzky;50.0447;14.8073
+441;Semčice;50.3672;15.0044
+442;Smržovka;50.7392;15.2483
+443;Tišice;50.2775;14.5483
+444;Karlovice;50.563;15.2127
+445;Vysoké nad Jizerou;50.6878;15.4033
+446;Benešov;49.7849;14.6917
+447;Čechtice;49.6203;15.0512
+448;Havlíčkův Brod;49.6119;15.5797
+449;Hulice;49.7219;15.0958
+450;Košetice;49.5579;15.1087
+451;Kožlí;49.6797;15.2447
+452;Křešín, Kramolín;49.57;15.0637
+453;Jílové u Prahy;49.9003;14.4792
+454;Nedrahovice, Rudolec;49.6319;14.4422
+455;Sázava;49.3917;15.3333
+456;Ondřejov;49.9108;14.7811
+457;Přibyslav, Hřiště;49.5903;15.7625
+458;Sedlčany;49.6558;14.4208
+459;Uhlířské Janovice;49.8828;15.0669
+460;Vlašim;49.6919;14.8947
+461;Blšany;50.2142;13.4703
+462;Bořislav;50.5758;13.9294
+463;Chomutov;50.4472;13.4058
+464;Cínovec;50.7319;13.7664
+465;Doksany;50.4583;14.1703
+466;Dubí;50.6875;13.7881
+467;Havraň;50.4506;13.6031
+468;Hněvice;50.442;14.3504
+469;Hora Svatého Šebestiána;50.5117;13.2525
+470;Hříškov;50.2714;13.8619
+471;Jirkov, Pesvice;50.4689;13.468
+472;Kadaň;50.3833;13.2667
+473;Kalek;50.5856;13.3561
+474;Tušimice;50.3767;13.3281
+475;Lenešice;50.3733;13.7653
+476;Litvínov;50.6007;13.6111
+477;Louny;50.35;13.8167
+478;Měděnec;50.4235;13.1181
+479;Most, Evěnice;50.528;13.571
+480;Mšené-lázně;50.3622;14.1239
+481;Nová Ves v Horách;50.5928;13.4831
+482;Podbořany;50.2278;13.405
+483;Roudnice nad Labem;50.4339;14.2564
+484;Smolnice;50.31;13.8497
+485;Sněžník;50.7922;14.085
+486;Strojetice;50.1738;13.4769
+487;Teplice;50.6383;13.8283
+488;Jirkov, Újezd;50.5;13.4667
+489;Ústí nad Labem, Kočkov;50.6839;14.0411
+490;Ústí nad Labem;50.6642;14.0264
+491;Výsluní;50.4692;13.2353
+492;Žatec;50.333;13.547
+493;Žatec, Velemyšleves;50.3789;13.5775
+494;Višňová, Andělka;51.0025;14.9903
+495;Bedřichov;50.815;15.1372
+496;Děčín, Boletice nad Labem;50.7436;14.1933
+497;Česká Lípa;50.6911;14.5425
+498;Děčín;50.7828;14.2336
+499;Doksy;50.5608;14.6578
+500;Frýdlant;50.9256;15.0886
+501;Hejnice;50.8846;15.1832
+502;Hradčany;50.6183;14.7194
+503;Jablonec nad Nisou;50.7214;15.1764
+504;Jablonné v Podještědí;50.7706;14.7706
+505;Ještěd;50.7328;14.9864
+506;Liberec;50.7692;15.025
+507;Mělník;50.3333;14.4833
+508;Nové Město pod Smrkem;50.9247;15.2561
+509;Pertoltice;50.9806;15.0903
+510;Bílý Potok, Smědava;50.8445;15.2732
+511;Stráž pod Ralskem;50.7033;14.8083
+512;Varnsdorf;50.9139;14.6225

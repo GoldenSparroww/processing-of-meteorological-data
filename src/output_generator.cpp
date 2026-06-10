@@ -18,9 +18,11 @@ constexpr double LAT_MIN = 48.521003814763994;
 constexpr double SVG_WIDTH = 1412.0;
 constexpr double SVG_HEIGHT = 809.0;
 constexpr std::string MONTHS[12] = {
-    "leden", "unor", "brezen", "duben", "kveten", "cerven",
-    "cervenec", "srpen", "zari", "rijen", "listopad", "prosinec"
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december"
 };
+
+
 std::string SVG_TEMPLATE = CZ_MAP_SVG_TEMPLATE;
 
 // NOTE: Writing to a file, have to be always sequential; we can only parallelize formating strings, but RAM usage rams up rapidly (need new buffer)

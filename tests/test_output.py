@@ -7,10 +7,11 @@ import xml.etree.ElementTree as ET
 import csv
 
 EXPECTED_FILES = [
-    "vykyvy.csv", "leden.svg", "unor.svg", "brezen.svg", "duben.svg",
-    "kveten.svg", "cerven.svg", "cervenec.svg", "srpen.svg",
-    "zari.svg", "rijen.svg", "listopad.svg", "prosinec.svg"
+    "anomalies.csv", "january.svg", "february.svg", "march.svg", "april.svg",
+    "may.svg", "june.svg", "july.svg", "august.svg",
+    "september.svg", "october.svg", "november.svg", "december.svg"
 ]
+
 
 DATASETS = {
     "small": "meteodata",
@@ -49,8 +50,8 @@ def compare_svg_unordered(file1, file2):
 
 def run_and_verify(exec_path, paths, dataset_size, mode):
     folder_name = DATASETS[dataset_size]
-    stations_csv = os.path.join(paths["data"], folder_name, "stanice.csv")
-    measurements_csv = os.path.join(paths["data"], folder_name, "mereni.csv")
+    stations_csv = os.path.join(paths["data"], folder_name, "stations.csv")
+    measurements_csv = os.path.join(paths["data"], folder_name, "measurements.csv")
     ref_dir = os.path.join(paths["tests"], "results", folder_name)
 
     with tempfile.TemporaryDirectory() as temp_out_dir:
