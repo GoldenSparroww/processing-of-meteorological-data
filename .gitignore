@@ -46,10 +46,13 @@
 /cmake-build-release*
 
 # Pytest
-tests/.venv
+/tests/.venv
 /build_test
+/tests/__pycache__
 /__pycache__
+/tests/.pytest_cache
 /.pytest_cache
+.venv
 
 # VSCode
 /.vscode
@@ -70,3 +73,5 @@ data/meteodata*/**/*
 !/doc/*/*.pdf
 !/doc/*/*.cls
 !/doc/*/*.sty
+
+.git

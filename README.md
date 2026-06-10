@@ -23,16 +23,24 @@ The application performs several data‑processing steps:
   - colors are linearly scaled to the global minimum and maximum temperatures
   - station coordinates are transformed using linear interpolation
 
-## Data
+## Data & tests
 
 Due to size constraints, no data is provided directly. However, a Python script is included that deterministically generates 3 datasets. The application can run on these datasets and can also be tested using pytest.
 
 Before any action, it is required to generate those "pseudo-random" data, to work with. Do that, by running `data_gen.py`.
 
-This could run for several minutes, and it will generate 3 suits of data. The output should look something like this:
+This could run for several minutes, and it will generate 3 suits of data. The output should look like this:
 
-```cmd
-(.venv) PS C:\Users\Josh\processing-of-meteorological-data> data_gen.py"
+```bash
+
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r .\tests\requirements.txt
+
+```
+
+```ps1
+(.venv) PS C:\Users\Josh\processing-of-meteorological-data> python .\data_gen.py
 
 Generating small...
 stations: 512 (17.8 KB)
@@ -49,19 +57,33 @@ measurements: 1221255.2 KB
 Done.
 ```
 
+By creating virtual envirnoment, you can try to run tests. All tests should pass, if the application already should have everything to be able to run.
+
+```ps1
+pytest
+```
+
 ## Running the application
 
 > Make sure you got already generated data.
 
 Compilation process is standard cmake execution (`mkdir build`, `cd build`, `make ..` etc.)
 
-- You might need to install additional libraries if needed
+> In examples minGW + gcc is used.
+
+```ps1
+cmake -G "MinGW Makefiles" -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --config Release
+```
 
 The compiled program is executed from the command line and supports both serial and parallel versions:
 
-```bash
-upp_sp1.exe .\data\meteodata_large\stations.csv .\data\meteodata_large\measurements.csv --serial
-upp_sp1.exe .\data\meteodata_large\stations.csv .\data\meteodata_large\measurements.csv --parallel
+```ps1
+build\upp_sp1.exe data\meteodata_medium\stations.csv data\meteodata_medium\measurements.csv --serial
+```
+
+```ps1
+build\upp_sp1.exe data\meteodata_large\stations.csv data\meteodata_large\measurements.csv --parallel
 ```
 
 ## Reference environment
